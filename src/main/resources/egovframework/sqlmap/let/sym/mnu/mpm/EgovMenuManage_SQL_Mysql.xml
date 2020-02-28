@@ -127,6 +127,25 @@
 			ORDER BY MENU_ORDR
 		]]> 
 	</select>
+	
+	<select id="menuManageDAO.selectMenuListHierarchy" parameterClass="egovMap" resultClass="egovMap">
+		<![CDATA[
+			SELECT A.ROWNUM, A.LEVEL, B.*
+			FROM (
+				SELECT @ROWNUM:=@ROWNUM+1 AS ROWNUM, A.*
+				FROM (			
+						SELECT  FNC_HIERARCHI() AS ID, @LEVEL AS LEVEL
+					     FROM (SELECT @ROWNUM:=0, @START_WITH:=#startNo#, @ID:=@START_WITH, @LEVEL:=0) VARS
+							JOIN LETTNMENUINFO
+					    WHERE @ID IS NOT NULL
+				) A
+				WHERE ID IS NOT NULL
+			) A
+			JOIN LETTNMENUINFO B
+				ON A.ID = B.MENU_NO
+			ORDER BY A.ROWNUM
+		 ]]>
+	</select>
 
 	<delete id="menuManageDAO.deleteAllMenuList" >
 		<![CDATA[                          

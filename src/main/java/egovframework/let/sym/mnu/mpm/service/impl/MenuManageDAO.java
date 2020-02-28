@@ -6,6 +6,7 @@ import egovframework.com.cmm.ComDefaultVO;
 import egovframework.let.sym.mnu.mpm.service.MenuManageVO;
 
 import egovframework.rte.psl.dataaccess.EgovAbstractDAO;
+import egovframework.rte.psl.dataaccess.util.EgovMap;
 
 import org.springframework.stereotype.Repository;
 /**
@@ -206,4 +207,9 @@ public class MenuManageDAO extends EgovAbstractDAO{
 	public int selectLastMenuNoCnt(MenuManageVO vo) throws Exception{
 		return (Integer)select("menuManageDAO.selectLastMenuNoCnt", vo);
 	}
+
+	public List<?> selectMenuListHierarchy(EgovMap egovMap) throws Exception {
+		return list("menuManageDAO.selectMenuListHierarchy", egovMap);
+	}
+
 }

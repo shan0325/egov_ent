@@ -40,6 +40,16 @@ public class ProgrmManageDAO extends EgovAbstractDAO {
 	public List<?> selectProgrmList(ComDefaultVO vo) throws Exception{
 		return list("progrmManageDAO.selectProgrmList_D", vo);
 	}
+	
+	/**
+	 * 프로그램 전체목록을 조회
+	 * @param vo ComDefaultVO
+	 * @return List
+	 * @exception Exception
+	 */
+	public List<?> selectProgrmAllList(ComDefaultVO vo) {
+		return list("progrmManageDAO.selectProgrmAllList", vo);
+	}
 
     /**
 	 * 프로그램목록 총건수를 조회한다.
@@ -238,4 +248,6 @@ public class ProgrmManageDAO extends EgovAbstractDAO {
 	public ProgrmManageDtlVO selectRqesterEmail(ProgrmManageDtlVO vo){
 		return (ProgrmManageDtlVO)select("progrmManageDAO.selectRqesterEmail", vo);
 	}
+
+	
 }

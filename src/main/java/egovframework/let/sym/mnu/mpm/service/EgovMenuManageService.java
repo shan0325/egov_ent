@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import egovframework.com.cmm.ComDefaultVO;
+import egovframework.rte.psl.dataaccess.util.EgovMap;
 
 /**
  * 메뉴관리에 관한 서비스 인터페이스 클래스를 정의한다.
@@ -141,6 +142,14 @@ public interface EgovMenuManageService {
 	 * @exception Exception
 	 */
 	String menuBndeRegist(MenuManageVO vo, InputStream inputStream) throws Exception;
+
+	/**
+	 * 메뉴 계층 목록 조회
+	 * @param egovMap
+	 * @return
+	 * @throws Exception
+	 */
+	List<?> selectMenuListHierarchy(EgovMap egovMap) throws Exception;
 
 
 }

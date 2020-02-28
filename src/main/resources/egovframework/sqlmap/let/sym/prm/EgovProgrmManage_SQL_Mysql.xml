@@ -28,6 +28,18 @@
 			WHERE binary(PROGRM_KOREAN_NM) like  CONCAT('%', #searchKeyword#, '%')
 			LIMIT  #recordCountPerPage# OFFSET #firstIndex#
 		 ]]>
+	</select>
+	
+	<select id="progrmManageDAO.selectProgrmAllList" parameterClass="comDefaultVO" resultMap="progrmManage">
+		<![CDATA[
+			SELECT 
+				  PROGRM_FILE_NM   AS "progrmFileNm"
+				, PROGRM_STRE_PATH AS "progrmStrePath"
+				, PROGRM_KOREAN_NM  AS "progrmKoreanNm" 
+				, PROGRM_DC        AS "progrmDc" 
+				, URL              AS "URL"
+			FROM LETTNPROGRMLIST
+		 ]]>
 	</select> 
 
 	<!-- 총건수 조회 -->

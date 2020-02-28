@@ -11,6 +11,7 @@ import egovframework.let.sym.prm.service.impl.ProgrmManageDAO;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.rte.fdl.excel.EgovExcelService;
+import egovframework.rte.psl.dataaccess.util.EgovMap;
 
 import javax.annotation.Resource;
 
@@ -566,5 +567,10 @@ public class EgovMenuManageServiceImpl extends EgovAbstractServiceImpl implement
 	private boolean deleteAllProgrmDtls() throws Exception {
 		progrmManageDAO.deleteAllProgrmDtls();
 		return true;
+	}
+
+	@Override
+	public List<?> selectMenuListHierarchy(EgovMap egovMap) throws Exception {
+		return menuManageDAO.selectMenuListHierarchy(egovMap);
 	}
 }

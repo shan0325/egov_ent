@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decorators defaultdir="/WEB-INF/jsp/sitemesh/include">
+    <decorator name="main" page="main_decorator.jsp">
+        <pattern>/front/*</pattern>
+    </decorator>
+    
+    <decorator name="cms" page="cms_decorator.jsp">
+        <pattern>/*</pattern>
+    </decorator>
+    
+    <excludes>
+        <pattern>/signup</pattern>
+        <pattern>/*_pop</pattern>
+    </excludes>
+</decorators>

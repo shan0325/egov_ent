@@ -1,20 +1,14 @@
 package egovframework.let.sym.mnu.mpm.web;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import egovframework.com.cmm.ComDefaultVO;
-import egovframework.com.cmm.EgovMessageSource;
-import egovframework.let.sym.mnu.mpm.service.EgovMenuManageService;
-import egovframework.let.sym.mnu.mpm.service.MenuManageVO;
-import egovframework.let.sym.prm.service.EgovProgrmManageService;
-
-import egovframework.rte.fdl.property.EgovPropertyService;
-import egovframework.rte.fdl.security.userdetails.util.EgovUserDetailsHelper;
-import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -31,6 +27,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springmodules.validation.commons.DefaultBeanValidator;
+
+import egovframework.com.cmm.ComDefaultVO;
+import egovframework.com.cmm.EgovMessageSource;
+import egovframework.let.sym.mnu.mpm.service.EgovMenuManageService;
+import egovframework.let.sym.mnu.mpm.service.MenuManageVO;
+import egovframework.let.sym.prm.service.EgovProgrmManageService;
+import egovframework.rte.fdl.property.EgovPropertyService;
+import egovframework.rte.fdl.security.userdetails.util.EgovUserDetailsHelper;
+import egovframework.rte.psl.dataaccess.util.EgovMap;
+import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 
 /**
  * 메뉴목록 관리및 메뉴생성, 사이트맵 생성을 처리하는 비즈니스 구현 클래스
@@ -380,6 +386,140 @@ public class EgovMenuManageController {
 			sLocationUrl = "sym/mnu/mpm/EgovMenuBndeRegist";
 		}
 		return sLocationUrl;
+	}
+	
+	@RequestMapping(value = "/sym/mnu/mpm/EgovMenuManageSelectApi.do")
+	public ResponseEntity<?> EgovMenuManageSelectApi(@ModelAttribute("searchVO") ComDefaultVO searchVO, ModelMap model) throws Exception {
+		// 0. Spring Security 사용자권한 처리
+		Boolean isAuthenticated = EgovUserDetailsHelper.isAuthenticated();
+		if (isAuthenticated == null || !isAuthenticated) {
+			Map<String, String> result = new HashMap<String, String>();
+			result.put("message", egovMessageSource.getMessage("fail.common.login"));
+			return new ResponseEntity<Map<String, String>>(result, HttpStatus.UNAUTHORIZED);
+		}
+		
+		EgovMap egovMap = new EgovMap();
+		egovMap.put("startNo", 0);
+		List<?> selectMenuList = menuManageService.selectMenuListHierarchy(egovMap);
+
+		return new ResponseEntity<List<?>>(selectMenuList, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/sym/mnu/mpm/selectMenuManageDetailApi.do")
+	public ResponseEntity<?> selectMenuManageDetailApi(@RequestParam("req_menuNo") String req_menuNo, @ModelAttribute("searchVO") ComDefaultVO searchVO, ModelMap model) throws Exception {
+		// 0. Spring Security 사용자권한 처리
+		Boolean isAuthenticated = EgovUserDetailsHelper.isAuthenticated();
+		if (isAuthenticated == null || !isAuthenticated) {
+			Map<String, String> result = new HashMap<String, String>();
+			result.put("message", egovMessageSource.getMessage("fail.common.login"));
+			return new ResponseEntity<Map<String, String>>(result, HttpStatus.UNAUTHORIZED);
+		}
+		searchVO.setSearchKeyword(req_menuNo);
+
+		MenuManageVO resultVO = menuManageService.selectMenuManage(searchVO);
+
+		return new ResponseEntity<MenuManageVO>(resultVO, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/sym/mnu/mpm/EgovMenuDetailUpdtApi.do")
+	public ResponseEntity<?> EgovMenuDetailUpdtApi(@ModelAttribute("menuManageVO") MenuManageVO menuManageVO, BindingResult bindingResult, ModelMap model) throws Exception {
+		Map<String, String> result = new HashMap<String, String>();
+		String resultMsg = "";
+		
+		// 0. Spring Security 사용자권한 처리
+		Boolean isAuthenticated = EgovUserDetailsHelper.isAuthenticated();
+		if (isAuthenticated == null || !isAuthenticated) {
+			result.put("message", egovMessageSource.getMessage("fail.common.login"));
+			return new ResponseEntity<Map<String, String>>(result, HttpStatus.UNAUTHORIZED);
+		}
+		beanValidator.validate(menuManageVO, bindingResult);
+		if (bindingResult.hasErrors()) {
+			result.put("message", egovMessageSource.getMessage("fail.common.validate"));
+			return new ResponseEntity<Map<String, String>>(result, HttpStatus.BAD_REQUEST);
+		}
+		ComDefaultVO searchVO = new ComDefaultVO();
+		searchVO.setSearchKeyword(menuManageVO.getProgrmFileNm());
+		if (progrmManageService.selectProgrmNMTotCnt(searchVO) == 0) {
+			result.put("message", egovMessageSource.getMessage("fail.common.update"));
+			return new ResponseEntity<Map<String, String>>(result, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		menuManageService.updateMenuManage(menuManageVO);
+		resultMsg = egovMessageSource.getMessage("success.common.update");
+
+		result.put("message", resultMsg);
+		return new ResponseEntity<Map<String, String>>(result, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/sym/mnu/mpm/EgovMenuRegistInsertApi.do")
+	public ResponseEntity<?> EgovMenuRegistInsertApi(@RequestParam Map<String, Object> commandMap, @ModelAttribute("menuManageVO") MenuManageVO menuManageVO, BindingResult bindingResult,
+			ModelMap model) throws Exception {
+		
+		Map<String, String> result = new HashMap<String, String>();
+		
+		// 0. Spring Security 사용자권한 처리
+		Boolean isAuthenticated = EgovUserDetailsHelper.isAuthenticated();
+		if (isAuthenticated == null || !isAuthenticated) {
+			result.put("message", egovMessageSource.getMessage("fail.common.login"));
+			return new ResponseEntity<Map<String, String>>(result, HttpStatus.UNAUTHORIZED);
+		}
+		beanValidator.validate(menuManageVO, bindingResult);
+		if (bindingResult.hasErrors()) {
+			result.put("message", egovMessageSource.getMessage("fail.common.validate"));
+			return new ResponseEntity<Map<String, String>>(result, HttpStatus.BAD_REQUEST);
+		}
+		if (menuManageService.selectMenuNoByPk(menuManageVO) == 0) {
+			ComDefaultVO searchVO = new ComDefaultVO();
+			searchVO.setSearchKeyword(menuManageVO.getProgrmFileNm());
+			if (progrmManageService.selectProgrmNMTotCnt(searchVO) == 0) {
+				result.put("message", egovMessageSource.getMessage("fail.common.insert"));
+				return new ResponseEntity<Map<String, String>>(result, HttpStatus.INTERNAL_SERVER_ERROR);
+			} else {
+				menuManageService.insertMenuManage(menuManageVO);
+				
+				result.put("message", egovMessageSource.getMessage("success.common.insert"));
+				return new ResponseEntity<Map<String, String>>(result, HttpStatus.OK);
+			}
+		} else {
+			result.put("message", egovMessageSource.getMessage("common.isExist.msg"));
+			return new ResponseEntity<Map<String, String>>(result, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/sym/mnu/mpm/EgovMenuManageSelectTree.do")
+	public String EgovMenuManageSelectTree(HttpServletRequest request, @ModelAttribute("searchVO") ComDefaultVO searchVO, ModelMap model) throws Exception {
+		// 0. Spring Security 사용자권한 처리
+		Boolean isAuthenticated = EgovUserDetailsHelper.isAuthenticated();
+		if (isAuthenticated == null || !isAuthenticated) {
+			model.addAttribute("message", egovMessageSource.getMessage("fail.common.login"));
+			return "uat/uia/EgovLoginUsr";
+		}
+		
+		List<?> progrmList = progrmManageService.selectProgrmAllList(searchVO);
+		model.addAttribute("progrmList", progrmList);
+
+		return "sym/mnu/mpm/EgovMenuManageTree";
+	}
+	
+	@RequestMapping(value = "/sym/mnu/mpm/EgovMenuManageDeleteApi.do")
+	public ResponseEntity<?> EgovMenuManageDeleteApi(@ModelAttribute("menuManageVO") MenuManageVO menuManageVO, ModelMap model) throws Exception {
+		Map<String, String> result = new HashMap<String, String>();
+		
+		// 0. Spring Security 사용자권한 처리
+		Boolean isAuthenticated = EgovUserDetailsHelper.isAuthenticated();
+		if (isAuthenticated == null || !isAuthenticated) {
+			result.put("message", egovMessageSource.getMessage("fail.common.login"));
+			return new ResponseEntity<Map<String, String>>(result, HttpStatus.UNAUTHORIZED);
+		}
+		if (menuManageService.selectUpperMenuNoByPk(menuManageVO) != 0) {
+			result.put("message", egovMessageSource.getMessage("fail.common.delete.upperMenuExist"));
+			return new ResponseEntity<Map<String, String>>(result, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		menuManageService.deleteMenuManage(menuManageVO);
+		
+		result.put("message", egovMessageSource.getMessage("success.common.delete"));
+		return new ResponseEntity<Map<String, String>>(result, HttpStatus.OK);
 	}
 
 }
