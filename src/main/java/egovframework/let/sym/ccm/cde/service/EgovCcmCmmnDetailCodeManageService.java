@@ -68,4 +68,7 @@ public interface EgovCcmCmmnDetailCodeManageService {
 	 */
 	void updateCmmnDetailCode(CmmnDetailCode cmmnDetailCode) throws Exception;
 
+	List<?> selectCmmnDetailCodes(CmmnDetailCodeVO cmmnDetailCodeVO);
+
+
 }

@@ -87,4 +87,9 @@ public class EgovCcmCmmnDetailCodeManageServiceImpl extends EgovAbstractServiceI
 		cmmnDetailCodeManageDAO.updateCmmnDetailCode(cmmnDetailCode);
 	}
 
+	@Override
+	public List<?> selectCmmnDetailCodes(CmmnDetailCodeVO cmmnDetailCodeVO) {
+		return cmmnDetailCodeManageDAO.selectCmmnDetailCodes(cmmnDetailCodeVO);
+	}
+
 }

@@ -87,4 +87,9 @@ public class CmmnDetailCodeManageDAO extends EgovAbstractDAO {
 		update("CmmnDetailCodeManageDAO.updateCmmnDetailCode", cmmnDetailCode);
 	}
 
+
+	public List<?> selectCmmnDetailCodes(CmmnDetailCodeVO cmmnDetailCodeVO) {
+		return list("CmmnDetailCodeManageDAO.selectCmmnDetailCodes", cmmnDetailCodeVO);
+	}
+
 }

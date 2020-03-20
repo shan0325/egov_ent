@@ -134,7 +134,7 @@
 			FROM (
 				SELECT @ROWNUM:=@ROWNUM+1 AS ROWNUM, A.*
 				FROM (			
-						SELECT  FNC_HIERARCHI() AS ID, @LEVEL AS LEVEL
+						SELECT  FNC_MENU_HIERARCHI() AS ID, @LEVEL AS LEVEL
 					     FROM (SELECT @ROWNUM:=0, @START_WITH:=#startNo#, @ID:=@START_WITH, @LEVEL:=0) VARS
 							JOIN LETTNMENUINFO
 					    WHERE @ID IS NOT NULL
@@ -145,6 +145,57 @@
 				ON A.ID = B.MENU_NO
 			ORDER BY A.ROWNUM
 		 ]]>
+		 
+		 <!-- 
+		 FNC_MENU_HIERARCHI 함수
+		 
+		 BEGIN
+
+			DECLARE v_id INT;
+			DECLARE v_pid INT;
+			DECLARE v_ordr INT;
+			
+			SET v_id = -1;
+			SET v_pid = @id;
+			SET v_ordr = 0;
+			
+			IF v_pid IS NULL THEN
+				RETURN NULL;
+			END IF;
+			
+			IF @level = 0 THEN
+				SET @level = @level + 1;
+				RETURN @start_with;
+			END IF;
+			
+			LOOP
+				SET @id = NULL;
+				
+				SELECT MENU_NO INTO @id
+				FROM LETTNMENUINFO
+				WHERE UPPER_MENU_NO = v_pid
+				AND (MENU_ORDR > v_ordr OR (MENU_ORDR = v_ordr AND MENU_NO > v_id))
+				AND MENU_NO <> @start_with
+				ORDER BY MENU_ORDR, MENU_NO
+				LIMIT 1;
+				
+				IF @id IS NOT NULL OR v_pid = @start_with THEN
+					SET @level = @level + 1;
+					RETURN @id;
+				END IF;
+				
+				SET @level = @level - 1;
+				
+				SELECT MENU_NO, UPPER_MENU_NO, MENU_ORDR 
+					INTO v_id, v_pid, v_ordr
+				FROM LETTNMENUINFO
+				WHERE MENU_NO = v_pid;
+			
+			END LOOP;
+		
+			RETURN NULL;
+		END
+		-->
 	</select>
 
 	<delete id="menuManageDAO.deleteAllMenuList" >

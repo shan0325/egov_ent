@@ -72,7 +72,7 @@ select {
 .dot_bl2{float:left; background: url("../images/bl_grayarrow.gif") no-repeat ; background-position: 0px 3px; padding-left:8px;  vertical-align: middle; width:310px;  text-align: left; padding-bottom:10px;}
 .rwriter{float:left; width:80px;}
 .rdate{float:left;color:#959595}
-.new{float:left; padding-left:10px;width: 40px;}
+/* .new{float:left; padding-left:10px;width: 40px;} */
 
 .board_title{padding-left:10px;padding-top:10px; height:34px; }
 .board_title2{background: url("../images/bl_underline2.gif") no-repeat ; background-position: 0px 30px;padding-top:10px; height:34px; }

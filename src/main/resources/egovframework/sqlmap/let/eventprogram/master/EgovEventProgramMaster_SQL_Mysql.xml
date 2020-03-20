@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="eventprogramMaster">
+
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias alias="eventProgramMasterVO" type="egovframework.let.eventprogram.master.service.EventProgramMasterVO"/>
+	<typeAlias alias="comDefaultVO" type="egovframework.com.cmm.ComDefaultVO"/>
+	
+	<sql id="detailSubquery">
+		SELECT ID,
+				GUBUN,
+				(SELECT CODE_NM FROM LETTCCMMNDETAILCODE WHERE CODE_ID = 'COM030' AND CODE = A.GUBUN) GUBUN_NAME,
+				TITLE,
+				CONTENT,
+				DATE_FORMAT(START_DATE, '%Y-%m-%d %H:%i') START_DATE,
+				DATE_FORMAT(END_DATE, '%Y-%m-%d %H:%i') END_DATE,
+				DATE_FORMAT(REQ_START_DATE, '%Y-%m-%d %H:%i') REQ_START_DATE,
+				DATE_FORMAT(REQ_END_DATE, '%Y-%m-%d %H:%i') REQ_END_DATE,
+				REQ_MAX_PERSON_NUMBER,
+				REQTIME_MAX_PERSON_NUMBER,
+				HOST,
+				LOCATION,
+				TEL,
+				TARGET_PERSION,
+				USE_YN,
+				REG_USER_ID,
+				DATE_FORMAT(REQ_END_DATE, '%Y-%m-%d') REG_DATE,
+				DATE_FORMAT(REQ_END_DATE, '%Y-%m-%d') MOD_DATE
+		FROM LETTNEVENT_PROGRAM_MASTER A
+	</sql>
+	
+	<select id="eventProgramMasterDAO.getTotalListCnt" parameterClass="comDefaultVO" resultClass="int">
+		SELECT COUNT(*)
+		FROM (
+			<include refid="detailSubquery"/>
+		) B
+		WHERE 1 = 1
+		<isEqual prepend="AND" property="searchCondition" compareValue="1">
+			GUBUN_NAME LIKE CONCAT('%', #searchKeyword# ,'%')
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="2">
+			TITLE LIKE CONCAT('%', #searchKeyword# ,'%')
+		</isEqual>
+	</select>
+	
+	<select id="eventProgramMasterDAO.getList" parameterClass="comDefaultVO" resultClass="egovMap">
+		SELECT *
+		FROM (
+			<include refid="detailSubquery"/>
+		) B
+		WHERE 1 = 1
+		<isEqual prepend="AND" property="searchCondition" compareValue="1">
+			GUBUN_NAME LIKE CONCAT('%', #searchKeyword# ,'%')
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="2">
+			TITLE LIKE CONCAT('%', #searchKeyword# ,'%')
+		</isEqual>
+		ORDER BY REG_DATE DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="eventProgramMasterDAO.getOne" parameterClass="eventProgramMasterVO" resultClass="egovMap">
+		<include refid="detailSubquery"/>
+		WHERE ID = #id#
+	</select>
+	
+	<insert id="eventProgramMasterDAO.add" parameterClass="eventProgramMasterVO">
+		INSERT INTO 
+			LETTNEVENT_PROGRAM_MASTER
+			(
+				GUBUN,
+				TITLE,
+				CONTENT,
+				START_DATE,
+				END_DATE,
+				REQ_START_DATE,
+				REQ_END_DATE,
+				REQ_MAX_PERSON_NUMBER,
+				REQTIME_MAX_PERSON_NUMBER,
+				HOST,
+				LOCATION,
+				TEL,
+				TARGET_PERSION,
+				USE_YN,
+				REG_USER_ID,
+				REG_DATE
+			)
+			VALUES
+			(
+				#gubun#,
+				#title#,
+				#content#,
+				#startDate#,
+				#endDate#,
+				#reqStartDate#,
+				#reqEndDate#,
+				#reqMaxPersonNumber#,
+				#reqtimeMaxPersonNumber#,
+				#host#,
+				#location#,
+				#tel#,
+				#targetPerson#,
+				#useYn#,
+				#regUserId#,
+				NOW()
+			)
+		<selectKey keyProperty="id" resultClass="long">
+		    SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="eventProgramMasterDAO.mod" parameterClass="eventProgramMasterVO">
+		UPDATE LETTNEVENT_PROGRAM_MASTER
+			SET GUBUN = #gubun#,
+				TITLE = #title#,
+				CONTENT = #content#,
+				START_DATE = #startDate#,
+				END_DATE = #endDate#,
+				REQ_START_DATE = #reqStartDate#,
+				REQ_END_DATE = #reqEndDate#,
+				REQ_MAX_PERSON_NUMBER = #reqMaxPersonNumber#,
+				REQTIME_MAX_PERSON_NUMBER = #reqtimeMaxPersonNumber#,
+				HOST = #host#,
+				LOCATION = #location#,
+				TEL = #tel#,
+				TARGET_PERSION = #targetPerson#,
+				USE_YN = #useYn#,
+				MOD_DATE = NOW()
+		WHERE ID = #id#
+	</update>
+	
+	<delete id="eventProgramMasterDAO.del" parameterClass="eventProgramMasterVO">
+		DELETE FROM LETTNEVENT_PROGRAM_MASTER WHERE ID = #id#
+	</delete>
+	
+</sqlMap>
