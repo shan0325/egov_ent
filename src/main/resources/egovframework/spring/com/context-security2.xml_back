@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:annotation-config/>
+	
+	<!-- 확장자를 이용해 패턴을 걸때는 /**/*.해당 확장자로 할 것(Ant Pattern 규칙) -->
+	<security:http pattern="/**/*.js" security="none" />
+	<security:http pattern="/**/*.css" security="none" />
+	<security:http pattern="/images/*" security="none" />
+
+	<security:http auto-config="true" use-expressions="true">
+		<!-- <security:intercept-url pattern="/admin/passwordEncoder.do" access="permitAll"/>
+		<security:intercept-url pattern="/admin/logout.do" access="permitAll"/>
+		<security:intercept-url pattern="/admin/login*.do" access="permitAll"/>
+		<security:intercept-url pattern="/admin/**" access="isAuthenticated()"/> -->
+		
+		<security:form-login 
+			login-page="/admin/loginForm.do" 
+			username-parameter="USERID" 
+			password-parameter="PWD"
+			default-target-url="/admin/main.do"
+			authentication-success-handler-ref="customAuthenticationSuccessHandler"
+			authentication-failure-handler-ref="customAuthenticationFailureHandler"
+		/>
+		
+		<security:anonymous granted-authority="ANONYMOUS" />
+		
+		<security:logout logout-success-url="/admin/logout.do" delete-cookies="JSESSIONID" />
+		
+		<!-- invalid-session-url​ : 세션이 끊겼을때 이동 할 페이지
+			 max-sessions="1" : 최대 허용 가능 세션 수​
+			 expired-url="/user/loginPage" :  중복 로그인이 일어났을 경우 이동 할 주소​ 
+			 만약 두번째 인증을 거부하게 하고 싶은 경우 
+			 concurrency-control에​ error-if-maximum-exceeded="true"속성을 지정하면 된다. -->
+		<security:session-management invalid-session-url="/common/sessionExpired.do">
+			<security:concurrency-control max-sessions="1" expired-url="/common/sessionExpired.do" />
+		</security:session-management>
+		
+		<!-- Spring Security에서 기본적으로 올라가는 FilterSecurityInterceptor를 
+			bypass 시키고(<security:intercept_url>태그가 선언되지 않으면 bypass함)
+		  	여기서만든 FilterSecurityInterceptor를 설정해줌 -->
+		<security:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="filterSecurityInterceptor"/>
+		
+		<!-- EXCEPTION_TRANSLATION_FILTER는 두가지의 예외를 처리한다. AuthenticationException과 
+			 AccessDeniedException이다. 만약 로그인 후 세션이 만료된 상황에서 Anonymous 권한으로 
+			 접근할 수 없는 페이지를 접근하려고하면 AccessDeniedException이 발생하게되고 이것을 
+			 ExceptionTranslationFilter클래스가 받아 처리한다. -->
+		<security:custom-filter after="EXCEPTION_TRANSLATION_FILTER" ref="ajaxSessionCheckFilter"/>
+		
+		<!-- 권한이 없을경우 이동할 error 페이지 -->
+		<security:access-denied-handler ref="accessDenied"/>
+	</security:http>
+	
+	<!-- <security:authentication-manager>
+		<security:authentication-provider user-service-ref="loginSecurityService" />
+	</security:authentication-manager>
+	<bean id="loginSecurityService" class="springTest01.admin.login.service.LoginSecurityService" />
+	<bean id="loginDAO" class="springTest01.admin.login.dao.LoginDAO" /> -->
+	
+	<!-- 인증정보로 로그인 한 주체의 정보를 얻는다. -->
+	<security:authentication-manager>
+		<security:authentication-provider user-service-ref="customJdbcDaoImpl" >
+			<security:password-encoder ref="bcryptPasswordEncoder" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+	
+	<!-- 로그인 처리 설정 -->
+	<bean id="customJdbcDaoImpl" class="springTest01.common.security.dao.CustomJdbcDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+		<property name="rolePrefix" value="" /><!-- 빈 문자열("")로 설정하지 않으면 기본값인 ROLE_를 DB로 조회한 권한 이름 앞에 붙이게 된다. -->
+		<property name="usersByUsernameQuery" value="SELECT * FROM ADMIN WHERE USERID=? AND STATUSCODE='P'" />
+		<property name="authoritiesByUsernameQuery" value="SELECT AUTHORITY FROM MEMBER_AUTHORITY WHERE ID=?" />
+		<property name="groupAuthoritiesByUsernameQuery" value="SELECT G.ID, G.GROUP_NAME, GA.AUTHORITY
+																FROM GROUPS G, GROUPS_MEMBER GM, GROUPS_AUTHORITY GA
+																WHERE GM.MEMBER_ID = ?
+																AND G.ID = GA.GROUP_ID
+																AND G.ID = GM.GROUP_ID" />
+		<property name="enableGroups" value="false" />
+	</bean>
+	
+	<bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	
+	
+	<!-- DB에서 권한을 조회하여 제어하는 설정 시작 -->
+	<!-- FilterSecurityInterceptor 클래스는 Filter중 가장 마지막에 올라오는 Filter 클래스 이다. 이 Filter 다음으로 오는게 
+	     Spring MVC Controller 클래스이다. 이 클래스 객체에 설정되어야 하는 것은 밑에 3가지 이다. 
+	     * Authentication Manager(인증 정보)
+	     * Security MetadataSource(대상 정보)
+	     * Access Manager(판단 주체) -->
+	<bean id="filterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+		<property name="authenticationManager" ref="org.springframework.security.authenticationManager" />
+		<property name="accessDecisionManager" ref="accessDecisionManager" />
+		<property name="securityMetadataSource" ref="reloadableFilterInvocationSecurityMetadataSource" />
+	</bean>
+	
+	<!-- 여러개의 Voter 객체들이 내린 결론들을 AbstractAccessDecisionManager 클래스를 상속받은 클래스 객체가 모아놓은 후 이 객체가
+	     자신만의 기준으로 종합적으로 판단해서 결정을 한다. 
+	     AffirmativeBased 클래스는 등록된 Voter 클래스 객체 중 단 하나라도 접근 허가(ACCESS_GRANTED)로 결론을 내면 최종적으로 접근 허가
+	     한다고 판단한다. -->
+	<bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+		<constructor-arg>
+			<list>
+				<!-- RoleVoter 클래스가 vote메소드에서 접근 허가인지 아닌지 판단 -->
+				<bean class="org.springframework.security.access.vote.RoleVoter">
+					<property name="rolePrefix" value="" />
+				</bean>
+				<bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
+			</list>
+		</constructor-arg>
+		<property name="allowIfAllAbstainDecisions" value="false" />
+	</bean>
+	
+	<!-- 권한이 변경되면 ReloadableFilterInvocationSecurityMetadataSource 클래스를 injection 한 뒤에 reload 메소드를 Controller에서 호출하면
+	     reload 메소드 내부에서 SecureObjectService를 이용해 DB를 다시 조회한뒤 requestMap을 재구성한다. -->
+	<bean id="reloadableFilterInvocationSecurityMetadataSource" class="springTest01.common.security.bean.ReloadableFilterInvocationSecurityMetadataSource">
+		<constructor-arg ref="requestMap" />
+		<property name="securedObjectService" ref="securedObjectService" />
+	</bean>
+	
+	<bean id="securedObjectService" class="springTest01.common.security.service.SecuredObjectServiceImpl">
+		<property name="securedObjectDao" ref="securedObjectDao" />
+	</bean>
+	
+	<bean id="securedObjectDao" class="springTest01.common.security.dao.SecuredObjectDao">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sqlRolesAndUrl" value="
+			SELECT A.RESOURCE_PATTERN AS URL, B.AUTHORITY AS AUTHORITY
+			FROM SECURED_RESOURCES A, SECURED_RESOURCES_ROLE B
+			WHERE A.RESOURCE_ID = B.RESOURCE_ID
+			AND A.RESOURCE_TYPE = 'url'
+			ORDER BY A.SORT_ORDER" />
+	</bean>
+	
+	<!-- getObject() 메소드를 통해 requestMap 객체가 return됨 -->
+	<bean id="requestMap" class="springTest01.common.security.bean.UrlResourcesMapFactoryBean" init-method="init">
+		<property name="securedObjectService" ref="securedObjectService" />
+	</bean>
+	<!-- DB에서 권한을 조회하여 제어하는 설정 끝 -->
+	
+	
+	<!-- 로그인 성공 시 부가적인 작업 설정 -->
+	<bean id="customAuthenticationSuccessHandler" class="springTest01.common.security.handler.CustomAuthenticationSuccessHandler">
+		<property name="targetUrlParameter" value="loginRedirect" />
+		<property name="useReferer" value="false" />
+		<property name="defaultUrl" value="/admin/main.do" />
+	</bean>
+	
+	<!-- 로그인 실패 시 부가적인 작업 설정 -->
+	<bean id="customAuthenticationFailureHandler" class="springTest01.common.security.handler.CustomAuthenticationFailureHandler">
+		<property name="loginidname" value="USERID" />
+		<property name="loginpasswdname" value="PWD" />
+		<property name="loginredirectname" value="loginRedirect" />
+		<property name="exceptionmsgname" value="securityexceptionmsg" />
+		<property name="defaultFailureUrl" value="/admin/loginForm.do?fail=true" />
+	</bean>
+	
+	<!-- 권한이 없을경우 403 errorPage를 보여주기위해 AccessDeniedHandler 인터페이스를 구현한 클래스 -->
+	<bean id="accessDenied" class="springTest01.common.security.handler.CustomAccessDeniedHandler">
+		<property name="errorPage" value="/admin/common/access_denied.do" />
+		<property name="ajaxHeader" value="${common.ajax.header}" />
+	</bean>
+	
+	<!-- ajax사용 시 사용자 세션이 만료되면 로그인페이지로 강제 이동시키기위한 필터 클래스 -->
+	<bean id="ajaxSessionCheckFilter" class="springTest01.common.security.filter.AjaxSessionCheckFilter">
+		<property name="ajaxHeader" value="${common.ajax.header}"/>
+	</bean>
+	
+</beans>

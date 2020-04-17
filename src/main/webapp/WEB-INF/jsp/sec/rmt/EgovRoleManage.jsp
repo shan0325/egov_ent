@@ -208,10 +208,10 @@ function press() {
                     <colgroup>
                         <col width="3%" >
                         <col width="10%" >  
-                        <col width="20%" >
+                        <col width="*" >
                         <col width="10%" >
-                        <col width="10%" >
-                        <col width="30%" >
+                        <col width="5%" >
+                        <col width="25%" >
                         <col width="12%" >
                         <col width="5%" >
                     </colgroup>
@@ -219,7 +219,7 @@ function press() {
                     <tr>
                         <th scope="col" class="f_field" nowrap="nowrap"><input type="checkbox" name="checkAll" class="check2" onclick="javascript:fncCheckAll()" title="전체선택"></th>
                         <th scope="col" nowrap="nowrap">롤 ID</th>
-                        <th scope="col" nowrap="nowrap">롤 명</th>
+                        <th scope="col" nowrap="nowrap">롤 패턴</th>
                         <th scope="col" nowrap="nowrap">롤 타입</th>
                         <th scope="col" nowrap="nowrap">롤 Sort</th>
                         <th scope="col" nowrap="nowrap">롤 설명</th>
@@ -234,7 +234,7 @@ function press() {
                       <tr>
                         <td nowrap="nowrap"><input type="checkbox" name="delYn" class="check2" title="선택"><input type="hidden" name="checkId" value="<c:out value="${role.roleCode}"/>" /></td>
                         <td nowrap="nowrap"><a href="#LINK" onclick="javascript:fncSelectRole('<c:out value="${role.roleCode}"/>')"><c:out value="${role.roleCode}"/></a></td>
-                        <td nowrap="nowrap"><c:out value="${role.roleNm}"/></td>
+                        <td nowrap="nowrap"><c:out value="${role.rolePtn}"/></td>
                         <td nowrap="nowrap"><c:out value="${role.roleTyp}"/></td>
                         <td nowrap="nowrap"><c:out value="${role.roleSort}"/></td>
                         <td nowrap="nowrap"><c:out value="${role.roleDc}"/></td>

@@ -217,10 +217,10 @@ function press() {
                     <colgroup>
                     <col width="3%" >
                     <col width="10%" >  
-                    <col width="17%" >
+                    <col width="*" >
                     <col width="10%" >
-                    <col width="10%" >
-                    <col width="30%" >
+                    <col width="5%" >
+                    <col width="25%" >
                     <col width="12%" >
                     <col width="8%" >
                     </colgroup>
@@ -228,7 +228,7 @@ function press() {
                     <tr>
                         <th scope="col" class="f_field" nowrap="nowrap"><input type="checkbox" name="checkAll" class="check2" onclick="javascript:fncCheckAll()" title="전체선택"></th>
                         <th scope="col" nowrap="nowrap">롤 ID</th>
-                        <th scope="col" nowrap="nowrap">롤 명</th>
+                        <th scope="col" nowrap="nowrap">롤 패턴</th>
                         <th scope="col" nowrap="nowrap">롤 타입</th>
                         <th scope="col" nowrap="nowrap">롤 Sort</th>
                         <th scope="col" nowrap="nowrap">롤 설명</th>
@@ -243,7 +243,7 @@ function press() {
                       <tr>
 					    <td nowrap="nowrap"><input type="checkbox" name="delYn" class="check2" title="선택"><input type="hidden" name="checkId" value="<c:out value="${authorRole.roleCode}"/>" /></td>
 					    <td nowrap="nowrap"><c:out value="${authorRole.roleCode}"/></td>
-					    <td nowrap="nowrap"><c:out value="${authorRole.roleNm}"/></td>
+					    <td nowrap="nowrap"><c:out value="${authorRole.rolePtn}"/></td>
 					    <td nowrap="nowrap"><c:out value="${authorRole.roleTyp}"/></td>
 					    <td nowrap="nowrap"><c:out value="${authorRole.roleSort}"/></td>
 					    <td nowrap="nowrap"><c:out value="${authorRole.roleDc}"/></td>

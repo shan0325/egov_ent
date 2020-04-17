@@ -117,6 +117,7 @@ function fnInit() {
                     <div id="login_title_div"><img alt="LOGIN 표준프레임워크 경량환경 내부업무 시스템에 오신것을 환영합니다." src="<c:url value='/' />images/login/img_logintitle.gif" /></div>        
                         <div class="user_login">
                         <form:form id="loginForm" name="loginForm" method="post">
+                        	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                             <fieldset><legend>조건정보 영역</legend>
                                 
                                 <div class="user_login_ultop">

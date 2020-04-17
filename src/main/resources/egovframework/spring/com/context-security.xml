@@ -13,74 +13,210 @@
  	<security:http pattern="/resource/**" security="none"/>
  	<security:http pattern="\A/WEB-INF/jsp/.*\Z" request-matcher="regex" security="none"/>
  	
-    <egov-security:config id="securityConfig"
-        loginUrl="/uat/uia/actionSecurityLogin.do"
-        logoutSuccessUrl="/uat/uia/actionMain.do"
-        loginFailureUrl="/uat/uia/actionSecurityLogin.do?login_error=1"
-        accessDeniedUrl="/sec/ram/accessDenied.do"		
+ 	<!-- front 설정 -->
+	<security:http pattern="/front/**" auto-config="true" use-expressions="true" authentication-manager-ref="frontAuthenticationManager">
+ 		<security:csrf disabled="true" />
+ 		
+ 		<security:intercept-url pattern="/front/**" access="permitAll" />
+ 		<!-- <security:intercept-url pattern="/front/**" access="hasAnyRole('ROLE_ADMIN,ROLE_USER_MEMBER')" /> -->
+ 	
+ 		<security:form-login
+ 			login-page="/front/login/loginView.do"
+ 			login-processing-url="/front/login/actionSecurityLogin.do"
+ 			default-target-url="/front/main.do"
+ 			authentication-failure-url="/uat/uia/actionSecurityLogin.do?login_error=1"
+ 			username-parameter="id"
+ 			password-parameter="password"
+ 		/>
+ 		
+ 		<security:logout logout-url="/front/login/actionLogout.do" logout-success-url="/front/main.do" invalidate-session="true" delete-cookies="JSESSIONID" />
+ 		
+ 		<security:session-management invalid-session-url="/front/main.do">
+			<security:concurrency-control max-sessions="1" error-if-maximum-exceeded="false" expired-url="/front/main.do" />
+		</security:session-management>
 		
-        dataSource="egov.dataSource"
-        			
-        jdbcUsersByUsernameQuery="SELECT USER_ID, ESNTL_ID AS PASSWORD, 1 ENABLED, USER_NM, USER_ZIP, 
-        							USER_ADRES, USER_EMAIL, USER_SE,  '-' ORGNZT_ID, ESNTL_ID, 
-        							'-' ORGNZT_NM FROM COMVNUSERMASTER WHERE CONCAT(USER_SE, USER_ID) = ?"
-        
-        jdbcAuthoritiesByUsernameQuery="SELECT A.SCRTY_DTRMN_TRGET_ID USER_ID, A.AUTHOR_CODE AUTHORITY 
-        							FROM LETTNEMPLYRSCRTYESTBS A, COMVNUSERMASTER B 
-        							WHERE A.SCRTY_DTRMN_TRGET_ID = B.ESNTL_ID AND B.USER_ID = ?"
-        							
-        jdbcMapClass="egovframework.let.uat.uia.service.impl.EgovSessionMapping"
-
-        requestMatcherType="regex"
-        
-        hash="plaintext"
-        hashBase64="false"
+		<!-- <security:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="filterSecurityInterceptor"/> -->
+ 	</security:http>
+ 	
+ 	<security:http pattern="/member/**" auto-config="true" use-expressions="true" authentication-manager-ref="frontAuthenticationManager">
+ 		<security:csrf disabled="false" />
+ 		
+ 		<security:intercept-url pattern="/member/login/**" access="permitAll" />
+ 		<security:intercept-url pattern="/member/**" access="hasAnyRole('ROLE_ADMIN,ROLE_USER_MEMBER')" />
+ 	
+ 		<security:form-login
+ 			login-page="/member/login/loginView.do"
+ 			login-processing-url="/member/login/actionSecurityLogin.do"
+ 			default-target-url="/member/main.do"
+ 			authentication-failure-url="/uat/uia/actionSecurityLogin.do?login_error=1"
+ 			username-parameter="id"
+ 			password-parameter="password"
+ 		/>
+ 		
+ 		<security:logout logout-url="/member/login/actionLogout.do" logout-success-url="/member/main.do" invalidate-session="true" delete-cookies="JSESSIONID" />
+ 		
+ 		<security:session-management invalid-session-url="/member/main.do">
+			<security:concurrency-control max-sessions="1" error-if-maximum-exceeded="false" expired-url="/front/main.do" />
+		</security:session-management>
+ 	</security:http>
+ 	
+ 	<bean id="passwordEncoder" class="egovframework.com.cmm.security.CustomPasswordEncoder"/>
+ 	
+ 	<security:authentication-manager id="frontAuthenticationManager">
+ 		<security:authentication-provider user-service-ref="frontEgovJdbcUserDetailsManager">
+ 			<security:password-encoder ref="passwordEncoder">
+ 				<security:salt-source user-property="username"/>
+ 			</security:password-encoder>
+ 		</security:authentication-provider>
+ 	</security:authentication-manager>
+ 	
+ 	<bean id="frontEgovJdbcUserDetailsManager" class="egovframework.rte.fdl.security.userdetails.jdbc.EgovJdbcUserDetailsManager">
+ 		<property name="dataSource" ref="egov.dataSource"/>
+		<property name="usersByUsernameQuery" value="SELECT USER_ID, PASSWORD, 1 ENABLED, USER_NM, USER_ZIP, 
+					        							USER_ADRES, USER_EMAIL, USER_SE,  '-' ORGNZT_ID, ESNTL_ID, 
+					        							'-' ORGNZT_NM FROM COMVNUSERMASTER WHERE USER_ID = ?"/>			        							
+ 		<property name="authoritiesByUsernameQuery" value="SELECT A.SCRTY_DTRMN_TRGET_ID USER_ID, A.AUTHOR_CODE AUTHORITY 
+						        							FROM LETTNEMPLYRSCRTYESTBS A, COMVNUSERMASTER B 
+						        							WHERE A.SCRTY_DTRMN_TRGET_ID = B.ESNTL_ID AND B.USER_ID = ?"/>			        							
+		<property name="mapClass" value="egovframework.let.uat.uia.service.impl.EgovSessionMapping"/>
+		<property name="roleHierarchy" ref="RoleHierarchy"/>
+ 	</bean>
+ 	
+ 	<!-- admin 설정 -->
+ 	<!-- <security:http pattern="/**" auto-config="true" use-expressions="true" authentication-manager-ref="adminAuthenticationManager">
+ 		<security:csrf disabled="true" />
+ 	
+ 		<security:intercept-url pattern="/**" access="permitAll" />
+ 		<security:intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" />
+	 	
+ 		<security:form-login
+ 			default-target-url="/uat/uia/actionMain.do"
+ 			authentication-failure-url="/uat/uia/actionSecurityLogin.do?login_error=1"
+ 		/>
+ 		
+ 		<security:logout logout-url="/uat/uia/actionLogout.do" logout-success-url="/uat/uia/actionMain.do" delete-cookies="JSESSIONID" />
+ 		
+ 		<security:session-management invalid-session-url="/uat/uia/actionMain.do">
+			<security:concurrency-control max-sessions="5" expired-url="/uat/uia/actionMain.do" />
+		</security:session-management>
 		
-		concurrentMaxSessons="1"
-		concurrentExpiredUrl="/uat/uia/actionMain.do"
-
-		defaultTargetUrl="/uat/uia/actionMain.do"
+		<security:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="filterSecurityInterceptor"/>
+ 	</security:http> -->
+ 	
+ 	<security:http auto-config="true" use-expressions="true" authentication-manager-ref="adminAuthenticationManager">
+ 		<security:csrf disabled="true" />
+ 	
+ 		<!-- <security:intercept-url pattern="/uat/**" access="permitAll" />
+ 		<security:intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" /> -->
+	 	
+ 		<security:form-login
+ 			login-page="/uat/uia/egovLoginUsr.do"
+ 			login-processing-url="/uat/uia/actionSecurityLogin.do"
+ 			default-target-url="/uat/uia/actionMain.do"
+ 			authentication-failure-url="/uat/uia/actionSecurityLogin.do?login_error=1"
+ 			username-parameter="id"
+ 			password-parameter="password"
+ 		/>
+ 		
+ 		<security:logout logout-url="/uat/uia/actionLogout.do" logout-success-url="/uat/uia/egovLoginUsr.do" invalidate-session="true" delete-cookies="JSESSIONID" />
+ 		
+ 		<security:session-management invalid-session-url="/uat/uia/actionMain.do">
+			<security:concurrency-control max-sessions="1" error-if-maximum-exceeded="false" expired-url="/uat/uia/actionMain.do" />
+		</security:session-management>
 		
-        
-    />
-
-    <egov-security:secured-object-config id="securedObjectConfig"
-       sqlHierarchicalRoles="
+		<security:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="filterSecurityInterceptor"/>
+ 	</security:http>
+ 	
+ 	<security:authentication-manager id="adminAuthenticationManager">
+ 		<security:authentication-provider user-service-ref="adminEgovJdbcUserDetailsManager">
+ 			<security:password-encoder ref="passwordEncoder">
+ 				<security:salt-source user-property="username"/>
+ 			</security:password-encoder>
+ 		</security:authentication-provider>
+ 	</security:authentication-manager>
+ 	
+ 	<bean id="adminEgovJdbcUserDetailsManager" class="egovframework.rte.fdl.security.userdetails.jdbc.EgovJdbcUserDetailsManager">
+ 		<property name="dataSource" ref="egov.dataSource"/>
+ 		<!-- <property name="usersByUsernameQuery" value="SELECT USER_ID, ESNTL_ID AS PASSWORD, 1 ENABLED, USER_NM, USER_ZIP, 
+					        							USER_ADRES, USER_EMAIL, USER_SE,  '-' ORGNZT_ID, ESNTL_ID, 
+					        							'-' ORGNZT_NM FROM COMVNUSERMASTER WHERE CONCAT(USER_SE, USER_ID) = ?"/> -->
+		<property name="usersByUsernameQuery" value="SELECT USER_ID, PASSWORD, 1 ENABLED, USER_NM, USER_ZIP, 
+					        							USER_ADRES, USER_EMAIL, USER_SE,  '-' ORGNZT_ID, ESNTL_ID, 
+					        							'-' ORGNZT_NM FROM COMVNUSERMASTER WHERE USER_ID = ?"/>			        							
+ 		<property name="authoritiesByUsernameQuery" value="SELECT A.SCRTY_DTRMN_TRGET_ID USER_ID, A.AUTHOR_CODE AUTHORITY 
+						        							FROM LETTNEMPLYRSCRTYESTBS A, COMVNUSERMASTER B 
+						        							WHERE A.SCRTY_DTRMN_TRGET_ID = B.ESNTL_ID AND B.USER_ID = ?"/>			        							
+		<property name="mapClass" value="egovframework.let.uat.uia.service.impl.EgovSessionMapping"/>
+		<property name="roleHierarchy" ref="RoleHierarchy"/>
+ 	</bean>
+ 	
+ 	<bean id="RoleHierarchy" class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
+ 		<property name="hierarchy" value="SELECT a.CHLDRN_ROLE child, a.PARNTS_ROLE parent 
+       		FROM LETTNROLES_HIERARCHY a LEFT JOIN LETTNROLES_HIERARCHY b on (a.CHLDRN_ROLE = b.PARNTS_ROLE)"/>
+ 	</bean>
+ 	
+ 	<!-- DB에서 권한을 조회하여 제어하는 설정 시작 -->
+	<bean id="filterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+		<property name="authenticationManager" ref="org.springframework.security.authenticationManager" />
+		<property name="accessDecisionManager" ref="accessDecisionManager" />
+		<property name="securityMetadataSource" ref="reloadableFilterInvocationSecurityMetadataSource" />
+	</bean>
+	
+	<bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+		<constructor-arg>
+			<list>
+				<bean class="org.springframework.security.access.vote.RoleVoter">
+					<property name="rolePrefix" value="ROLE_" />
+				</bean>
+				<bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
+			</list>
+		</constructor-arg>
+		<property name="allowIfAllAbstainDecisions" value="false" />
+	</bean>
+	
+	<!-- 권한이 변경되면 ReloadableFilterInvocationSecurityMetadataSource 클래스를 injection 한 뒤에 reload 메소드를 Controller에서 호출하면
+	     reload 메소드 내부에서 SecureObjectService를 이용해 DB를 다시 조회한뒤 requestMap을 재구성한다. -->
+	<bean id="reloadableFilterInvocationSecurityMetadataSource" class="egovframework.rte.fdl.security.intercept.EgovReloadableFilterInvocationSecurityMetadataSource">
+		<constructor-arg ref="requestMap" />
+		<property name="securedObjectService" ref="securedObjectService" />
+	</bean>
+	
+	<!-- getObject() 메소드를 통해 requestMap 객체가 return됨 -->
+	<bean id="requestMap" class="egovframework.rte.fdl.security.intercept.UrlResourcesMapFactoryBean" init-method="init">
+		<property name="securedObjectService" ref="securedObjectService" />
+	</bean>
+	
+	<bean id="securedObjectService" class="egovframework.rte.fdl.security.securedobject.impl.SecuredObjectServiceImpl">
+		<property name="securedObjectDAO" ref="securedObjectDAO" />
+		<property name="requestMatcherType" value="regex"/><!-- default : ant -->
+	</bean>
+	
+	<bean id="securedObjectDAO" class="egovframework.rte.fdl.security.securedobject.impl.SecuredObjectDAO">
+		<property name="dataSource" ref="egov.dataSource" />
+       	<property name="sqlHierarchicalRoles" value="
        		SELECT a.CHLDRN_ROLE child, a.PARNTS_ROLE parent 
-       		FROM LETTNROLES_HIERARCHY a LEFT JOIN LETTNROLES_HIERARCHY b on (a.CHLDRN_ROLE = b.PARNTS_ROLE)"
-       		
-       sqlRolesAndUrl="
-       		SELECT a.ROLE_PTTRN url, b.AUTHOR_CODE authority 
+       		FROM LETTNROLES_HIERARCHY a LEFT JOIN LETTNROLES_HIERARCHY b on (a.CHLDRN_ROLE = b.PARNTS_ROLE)"/>
+       	<property name="sqlRolesAndUrl" value="
+			SELECT a.ROLE_PTTRN url, b.AUTHOR_CODE authority 
        		FROM LETTNROLEINFO a, LETTNAUTHORROLERELATE b 
        		WHERE a.ROLE_CODE = b.ROLE_CODE AND a.ROLE_TY = 'url'  
-       		ORDER BY a.ROLE_SORT"
-       		
-       sqlRolesAndMethod="
+       		ORDER BY a.ROLE_SORT" />
+       	<property name="sqlRolesAndMethod" value="
        		SELECT a.ROLE_PTTRN method, b.AUTHOR_CODE authority 
        		FROM LETTNROLEINFO a, LETTNAUTHORROLERELATE b 
        		WHERE a.ROLE_CODE = b.ROLE_CODE AND a.ROLE_TY = 'method'
-       		ORDER BY a.ROLE_SORT"
-       
-       sqlRolesAndPointcut="
+       		ORDER BY a.ROLE_SORT"/>	
+       	<property name="sqlRolesAndPointcut" value="
        		SELECT a.ROLE_PTTRN pointcut, b.AUTHOR_CODE authority 
        		FROM LETTNROLEINFO a, LETTNAUTHORROLERELATE b 
        		WHERE a.ROLE_CODE = b.ROLE_CODE AND a.ROLE_TY = 'pointcut'
-       		ORDER BY a.ROLE_SORT"
-
-       sqlRegexMatchedRequestMapping="
+       		ORDER BY a.ROLE_SORT"/>
+       	<property name="sqlRegexMatchedRequestMapping" value="
        		SELECT a.resource_pattern uri, b.authority authority 
        		FROM LETTNROLEINFO a, LETTNAUTHORROLERELATE b 
        		WHERE a.ROLE_CODE = b.ROLE_CODE AND a.ROLE_TY = 'regex'
-       		ORDER BY a.ROLE_SORT"
-       
-    />
-
-	<egov-security:initializer id="initializer" supportMethod="true" supportPointcut="false" />
-
-    <!-- URL에 세미콜론(semicolon)허용 여부(기본값/false) -->
-	<bean id="egovStrictHttpFirewall" class="org.springframework.security.web.firewall.StrictHttpFirewall">
-		<property name="allowSemicolon" value="true"/>
+       		ORDER BY a.ROLE_SORT"/>
 	</bean>
-	<security:http-firewall ref="egovStrictHttpFirewall"/>
-		
+	<!-- DB에서 권한을 조회하여 제어하는 설정 끝 -->
+	
 </beans>

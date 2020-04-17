@@ -19,12 +19,12 @@
 	</bean>
 
 	<!-- 시스템 로그 요약 스케줄러 -->
-	<bean id="sysLogScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	<!-- <bean id="sysLogScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<ref bean="sysLogTrigger" />
 			</list>
 		</property>
-	</bean>
+	</bean> -->
 
 </beans>

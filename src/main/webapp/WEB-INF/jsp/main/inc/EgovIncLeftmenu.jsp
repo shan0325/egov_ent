@@ -13,6 +13,10 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <%@ page import ="egovframework.com.cmm.LoginVO" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+<sec:authentication property="principal" var="user"/>
+
 <script type="text/javascript" src="<c:url value="/js/EgovMainMenu.js"/>"></script>
 <script type="text/javascript">
 <!--
@@ -31,7 +35,7 @@ function fn_MovePage(nodeNum) {
 <!-- 메뉴 시작 -->
 <div id="LoginStatus">
 	  <fieldset><legend>조건정보 영역</legend>
-	  	<%
+	  	<%-- <%
         LoginVO loginVO = (LoginVO)session.getAttribute("LoginVO");
         if(loginVO == null){
         %>
@@ -53,7 +57,27 @@ function fn_MovePage(nodeNum) {
             </ul>
 	  	<%
 	  	}
-        %>
+        %> --%>
+        
+        <c:choose>
+        <c:when test="${user ne 'anonymousUser'}">
+        	<c:set var="loginName" value="${user.username}"/>
+            <ul>
+	  	    <li><a href="#LINK" onclick="alert('개인정보 확인 등의 링크 제공'); return false;">
+            <c:out value="${loginName}"/> 님</a></li>
+            <li><a href="<c:url value='/uat/uia/actionLogout.do'/>">
+            <img src="<c:url value='/images/leftmenu/logout.jpg' />" alt="로그아웃" /></a></li>
+            <li>최근접속:2011-10-12 13:24</li>
+            </ul>
+        </c:when>
+        <c:otherwise>
+	        <ul>
+		  		<li>로그인정보 없음</li>
+		  		<li><a href="<c:url value='/uat/uia/egovLoginUsr.do'/>"><img src="<c:url value='/images/leftmenu/login.jpg' />" alt="로그인" /></a></li>
+		  		<li>로그인후 사용하십시오</li>
+		  	</ul>
+        </c:otherwise>
+        </c:choose>
 	  </fieldset>
 </div>
 <div id="nav">
