@@ -44,20 +44,20 @@
 				
 				<h3>행사프로그램관리</h3>
 				
-				<form name="searchForm" id="searchForm">
+				<form name="searchForm" id="searchForm" class="form-inline justify-content-end">
 					<input type="hidden" name="pageIndex" value="<c:out value="${searchVO.pageIndex}"/>" />
 					<input type="hidden" name="pageUnit" value="<c:out value="${searchVO.pageUnit}"/>" />
 					
-					<div class="form-group d-flex justify-content-end">
-						<select name="searchCondition" class="form-control col-sm-1">
+					<div class="form-group mb-2">
+						<select name="searchCondition" class="form-control">
 							<option value="1" ${searchVO.searchCondition eq 1 ? 'selected' : ''}>프로그램구분</option>
 							<option value="2" ${searchVO.searchCondition eq 2 ? 'selected' : ''}>프로그램명</option>
 						</select>
-						<div class="col-sm-3">
-							<input type="text" name="searchKeyword" class="form-control" value="<c:out value="${searchVO.searchKeyword}"/>" />
-						</div>
-						<button type="button" class="btn btn-info" id="searchBtn">검색</button>
 					</div>
+					<div class="form-group mx-sm-3 mb-2">
+						<input type="text" name="searchKeyword" class="form-control" value="<c:out value="${searchVO.searchKeyword}"/>" />
+					</div>
+					<button type="button" class="btn btn-info mb-2" id="searchBtn">검색</button>
 				</form>
 				
 				<table class="table">
@@ -109,16 +109,16 @@
 				<ul class="nav justify-content-end">
 				  <li><button type="button" class="btn btn-primary" id="addBtn">등록</button></li>
 				</ul>
+                
+                <!-- 페이지 네비게이션 시작 -->
+		        <nav aria-label="Page navigation example">
+		            <ul class="pagination justify-content-center">
+		                <ui:pagination paginationInfo = "${paginationInfo}" type="image" jsFunction="linkPage"/>
+		            </ul>
+		        </nav>
+		        <!-- //페이지 네비게이션 끝 -->  
 				
-				<!-- 페이지 네비게이션 시작 -->
-                <div id="paging_div">
-                    <ul class="paging_align">
-                        <ui:pagination paginationInfo = "${paginationInfo}" type="image" jsFunction="linkPage"/>                        
-                    </ul>
-                </div>
-                <!-- //페이지 네비게이션 끝 -->  
-				
-				<script>
+				<script type="text/javascript">
 					$(document).ready(function() {
 						$('#addBtn').on('click', function() {
 							window.location.href = '<c:out value="/let/eventprogram/master/createView.do"/>';

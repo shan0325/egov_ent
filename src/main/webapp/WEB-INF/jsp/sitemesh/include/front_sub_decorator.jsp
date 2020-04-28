@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="decorator" uri="http://www.opensymphony.com/sitemesh/decorator" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+<sec:authentication property="principal" var="user"/>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -39,14 +43,26 @@
 	          <a class="nav-link" href="<c:url value="/"/>">Home</a>
 	        </li>
 	        <li class="nav-item">
-	          <a class="nav-link" href="about.html">About</a>
+	          <a class="nav-link" href="<c:url value="/front/eventprogram/list.do?pageUnit=6"/>">Event</a>
 	        </li>
 	        <li class="nav-item">
-	          <a class="nav-link" href="post.html">Sample Post</a>
+	          <a class="nav-link" href="<c:url value="/"/>">게시판</a>
 	        </li>
-	        <li class="nav-item">
-	          <a class="nav-link" href="<c:url value="/front/login/loginView.do"/>">로그인</a>
-	        </li>
+	        <c:choose>
+	        <c:when test="${user ne 'anonymousUser'}">
+	        	<li class="nav-item">
+		          <a class="nav-link" href="contact.html">${user.username}</a>
+		        </li>
+		        <li class="nav-item">
+		          <a class="nav-link" href="<c:url value="/front/login/actionLogout.do"/>">로그아웃</a>
+		        </li>
+	        </c:when>
+	        <c:otherwise>
+		        <li class="nav-item">
+		          <a class="nav-link" href="<c:url value="/front/login/loginView.do"/>">로그인</a>
+		        </li>
+	        </c:otherwise>
+	        </c:choose>
 	      </ul>
 	    </div>
 	  </div>

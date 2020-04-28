@@ -50,82 +50,96 @@
 					<input type="hidden" name="endDate" id="endDate" />
 					<input type="hidden" name="reqStartDate" id="reqStartDate" />
 					<input type="hidden" name="reqEndDate" id="reqEndDate" />
-				
-				  <div class="form-row">
-				    <div class="form-group col-md-3">
-				      <label for="gubun">구분</label>
-				      <select name="gubun" class="form-control">
-				      	<c:forEach var="code" items="${gubunCodeList}">
-							<option value="${code.code}" ${code.code eq detail.gubun ? 'selected' : ''}>${code.codeNm}</option>
-				      	</c:forEach>
-				      </select>
-				    </div>
-				  </div>
-				  <div class="form-row">
-				    <div class="form-group col-md-6">
-				      <label for="title">프로그램명</label>
-				      <input type="text" name="title" class="form-control" id="title" maxlength="200" value="<c:out value="${detail.title}"/>">
-				    </div>
-				  </div>
-				 <div class="form-row">
-				    <div class="form-group col-md-6">
-				      <label for="content">내용</label>
-				      <textarea name="content" class="form-control" rows="5"><c:out value="${detail.content}"/></textarea>
-				    </div>
-				  </div>
-				  <div class="form-row">
-				    <div class="form-group col-md-1">
-				      <label for="startDateYmd">프로그램 시작일</label>
-				      <fmt:parseDate var="startDate" value="${detail.startDate}" pattern="yyyy-MM-dd HH:mm"/>
-				      <fmt:formatDate var="startTime" value="${startDate}" pattern="HH"/>
-				      <fmt:formatDate var="startMinute" value="${startDate}" pattern="mm"/>
-					  <input type="text" name="startDateYmd" class="form-control datePicker" id="startDateYmd" readonly="readonly" value="<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd"/>">
-				    </div>
-				    <div class="form-group col-md-1">
-				      <label for="startTime">시간</label>
-					  <select name="startTime" class="form-control" id="startTime">
-					  	<c:forEach var="time" begin="0" end="23">
-					  		<fmt:formatNumber var="time" minIntegerDigits="2" value="${time}" type="number"/>
-					  		<option value="${time}" ${time eq startTime ? 'selected' : ''}>${time}</option>
-					  	</c:forEach>
-					  </select>
-				    </div>
-				    <div class="form-group col-md-1">
-				      <label for="startMinute">분</label>
-					  <select name="startMinute" class="form-control" id="startMinute">
-					  	<c:forEach var="minute" begin="0" end="59">
-					  		<fmt:formatNumber var="minute" minIntegerDigits="2" value="${minute}" type="number"/>
-					  		<option value="${minute}" ${minute eq startMinute ? 'selected' : ''}>${minute}</option>
-					  	</c:forEach>
-					  </select>
-				    </div>
-				    <div class="form-group col-md-1">
-				      <label for="endDateYmd">프로그램 종료일</label>
-				      <fmt:parseDate var="endDate" value="${detail.endDate}" pattern="yyyy-MM-dd HH:mm"/>
-				      <fmt:formatDate var="endTime" value="${endDate}" pattern="HH"/>
-				      <fmt:formatDate var="endMinute" value="${endDate}" pattern="mm"/>
-				      <input type="text" name="endDateYmd" class="form-control datePicker" id="endDateYmd" readonly="readonly" value="<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd"/>">
-				    </div>
-				    <div class="form-group col-md-1">
-				      <label for="endTime">종료시간</label>
-					  <select name="endTime" class="form-control" id="endTime">
-					  	<c:forEach var="time" begin="0" end="23">
-					  		<fmt:formatNumber var="time" minIntegerDigits="2" value="${time}" type="number"/>
-					  		<option value="${time}" ${time eq endTime ? 'selected' : ''}>${time}</option>
-					  	</c:forEach>
-					  </select>
-				    </div>
-				    <div class="form-group col-md-1">
-				      <label for="endMinute">분</label>
-					  <select name="endMinute" class="form-control" id="endMinute">
-					  	<c:forEach var="minute" begin="0" end="59">
-					  		<fmt:formatNumber var="minute" minIntegerDigits="2" value="${minute}" type="number"/>
-					  		<option value="${minute}" ${minute eq endMinute ? 'selected' : ''}>${minute}</option>
-					  	</c:forEach>
-					  </select>
-				    </div>
-				  </div>
-				  <div class="form-row">
+
+					<div class="form-row">
+						<div class="form-group col-md-3">
+							<label for="gubun">구분</label> <select name="gubun" class="form-control">
+								<c:forEach var="code" items="${gubunCodeList}">
+									<option value="${code.code}" ${code.code eq detail.gubun ? 'selected' : ''}>${code.codeNm}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="form-group col-md-6">
+							<label for="title">프로그램명</label> 
+							<input type="text" name="title" class="form-control" id="title" maxlength="200" value="<c:out value="${detail.title}"/>">
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="form-group col-md-6">
+							<label for="content">내용</label>
+							<textarea name="content" class="form-control" rows="5"><c:out value="${detail.content}" /></textarea>
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="form-group col-md-6">
+							<label for="mainImg">메인 이미지</label>
+							<input type="file" class="form-control" name="mainImg" id="mainImg" />
+							<input type="hidden" name="mainImgAtchFileId" value="${detail.mainImgAtchFileId}" />
+							<div>
+							<c:if test="${not empty mainImgs}">
+								<c:forEach var="mainImg" items="${mainImgs}">
+									<div class="pt-2">
+										<img alt="메인 이미지" src="/cmm/fms/getImage.do?atchFileId=${mainImg.atchFileId}&fileSn=${mainImg.fileSn}" width="200">
+										<br/>
+										<c:out value="${mainImg.orignlFileNm}"/>
+										<input type="checkbox" name="delMainImgFileSn" value="${mainImg.fileSn}" />[삭제]
+									</div>
+								</c:forEach>
+							</c:if>
+							</div>
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="form-group col-md-1">
+							<label for="startDateYmd">프로그램 시작일</label>
+							<fmt:parseDate var="startDate" value="${detail.startDate}" pattern="yyyy-MM-dd HH:mm" />
+							<fmt:formatDate var="startTime" value="${startDate}" pattern="HH" />
+							<fmt:formatDate var="startMinute" value="${startDate}" pattern="mm" />
+							<input type="text" name="startDateYmd" class="form-control datePicker" id="startDateYmd" readonly="readonly" value="<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd"/>">
+						</div>
+						<div class="form-group col-md-1">
+							<label for="startTime">시간</label> <select name="startTime" class="form-control" id="startTime">
+								<c:forEach var="time" begin="0" end="23">
+									<fmt:formatNumber var="time" minIntegerDigits="2" value="${time}" type="number" />
+									<option value="${time}" ${time eq startTime ? 'selected' : ''}>${time}</option>
+								</c:forEach>
+							</select>
+						</div>
+						<div class="form-group col-md-1">
+							<label for="startMinute">분</label> <select name="startMinute" class="form-control" id="startMinute">
+								<c:forEach var="minute" begin="0" end="59">
+									<fmt:formatNumber var="minute" minIntegerDigits="2" value="${minute}" type="number" />
+									<option value="${minute}" ${minute eq startMinute ? 'selected' : ''}>${minute}</option>
+								</c:forEach>
+							</select>
+						</div>
+						<div class="form-group col-md-1">
+							<label for="endDateYmd">프로그램 종료일</label>
+							<fmt:parseDate var="endDate" value="${detail.endDate}" pattern="yyyy-MM-dd HH:mm" />
+							<fmt:formatDate var="endTime" value="${endDate}" pattern="HH" />
+							<fmt:formatDate var="endMinute" value="${endDate}" pattern="mm" />
+							<input type="text" name="endDateYmd" class="form-control datePicker" id="endDateYmd" readonly="readonly" value="<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd"/>">
+						</div>
+						<div class="form-group col-md-1">
+							<label for="endTime">종료시간</label> <select name="endTime" class="form-control" id="endTime">
+								<c:forEach var="time" begin="0" end="23">
+									<fmt:formatNumber var="time" minIntegerDigits="2" value="${time}" type="number" />
+									<option value="${time}" ${time eq endTime ? 'selected' : ''}>${time}</option>
+								</c:forEach>
+							</select>
+						</div>
+						<div class="form-group col-md-1">
+							<label for="endMinute">분</label> <select name="endMinute" class="form-control" id="endMinute">
+								<c:forEach var="minute" begin="0" end="59">
+									<fmt:formatNumber var="minute" minIntegerDigits="2" value="${minute}" type="number" />
+									<option value="${minute}" ${minute eq endMinute ? 'selected' : ''}>${minute}</option>
+								</c:forEach>
+							</select>
+						</div>
+					</div>
+				   <div class="form-row">
 				    <div class="form-group col-md-1">
 				      <label for="reqStartDateYmd">접수 시작일</label>
 				      <fmt:parseDate var="reqStartDate" value="${detail.reqStartDate}" pattern="yyyy-MM-dd HH:mm"/>
@@ -208,6 +222,22 @@
 				    </div>
 				  </div>
 				  <div class="form-row">
+						<div class="form-group col-md-6">
+							<label for="attachFile">첨부파일</label>
+							<input type="file" class="form-control" name="attachFile" id="attachFile" />
+							<input type="hidden" name="atchFileId" value="${detail.atchFileId}" />
+							<div class="mt-2">
+							<c:if test="${not empty atchFiles}">
+								<c:forEach var="atchFile" items="${atchFiles}">
+									<a href="/cmm/fms/FileDown.do?atchFileId=${atchFile.atchFileId}&fileSn=${atchFile.fileSn}"><c:out value="${atchFile.orignlFileNm}"/></a>
+									<input type="checkbox" name="delAtchFileFileSn" value="${atchFile.fileSn}" />[삭제]
+									<br/>
+								</c:forEach>
+							</c:if>
+							</div>
+						</div>
+					</div>
+				  <div class="form-row">
 				  	<div class="form-group col-md-6">
 				  		<div class="form-check form-check-inline">
 				  			<c:choose>
@@ -263,11 +293,10 @@
 								if(confirm("수정 하시겠습니까?")) {
 									fn_prepareSubmit();
 									
-									var data = $('#eventProgramMasterForm').serialize();
-									$.ajax({
+									$('#eventProgramMasterForm').ajaxForm({
 										type: 'post',
 										url: '<c:url value="/let/eventprogram/master/updateApi.do"/>',
-										data: data,
+										enctype : 'multipart/form-data',
 										dataType: 'json',
 										success: function(data) {
 											alert(data.message);
@@ -278,6 +307,7 @@
 											alert('오류가 발생하였습니다. 다시 시도해주세요');
 										}
 									});
+									$('#eventProgramMasterForm').submit();
 								}
 							}
 						}
@@ -287,11 +317,10 @@
 								if(confirm("등록 하시겠습니까?")) {
 									fn_prepareSubmit();
 									
-									var data = $('#eventProgramMasterForm').serialize();
-									$.ajax({
+									$('#eventProgramMasterForm').ajaxForm({
 										type: 'post',
 										url: '<c:url value="/let/eventprogram/master/createApi.do"/>',
-										data: data,
+										enctype : 'multipart/form-data',
 										dataType: 'json',
 										success: function(data) {
 											alert(data.message);
@@ -302,6 +331,7 @@
 											alert('오류가 발생하였습니다. 다시 시도해주세요');
 										}
 									});
+									$('#eventProgramMasterForm').submit();
 								}
 							}
 						}
@@ -309,6 +339,31 @@
 							if(!$('#title').val()) {
 								alert("프로그램명을 입력하세요");
 								$('#title').focus();
+								return false;
+							}
+							/* if(!$('#mainImg').val()) {
+								alert("메인 이미지를 등록하세요");
+								$('#mainImg').focus();
+								return false;
+							} */
+							if(!$('#startDateYmd').val()) {
+								alert("프로그램 시작일을 입력하세요");
+								$('#startDateYmd').focus();
+								return false;
+							}
+							if(!$('#endDateYmd').val()) {
+								alert("프로그램 종료일을 입력하세요");
+								$('#endDateYmd').focus();
+								return false;
+							}
+							if(!$('#reqStartDateYmd').val()) {
+								alert("접수 시작일을 입력하세요");
+								$('#reqStartDateYmd').focus();
+								return false;
+							}
+							if(!$('#reqEndDateYmd').val()) {
+								alert("접수 종료일을 입력하세요");
+								$('#reqEndDateYmd').focus();
 								return false;
 							}
 							return true;

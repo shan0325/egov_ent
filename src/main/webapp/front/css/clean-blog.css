@@ -3,16 +3,24 @@
  * Copyright 2013-2019 Start Bootstrap
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-clean-blog/blob/master/LICENSE)
  */
+ 
+@font-face { 
+	font-family: 'NanumBarunGothic';
+	src: url('/font/NanumBarunGothic/NanumBarunGothic.eot');
+	src: url('/font/NanumBarunGothic/NanumBarunGothic.eot') format('embedded-opentype'), url('/font/NanumBarunGothic/NanumBarunGothic.woff') format('woff');
+}
+
 
 body {
-  font-size: 20px;
+  /* font-size: 20px; */
   color: #212529;
-  font-family: 'Lora', 'Times New Roman', serif;
+  /* font-family: 'Lora', 'Times New Roman', serif; */
+  font-family: 'Open Sans', 'NanumBarunGothic', 'serif';
 }
 
 p {
-  line-height: 1.5;
-  margin: 30px 0;
+  /* line-height: 1.5;
+  margin: 30px 0; */
 }
 
 p a {
@@ -25,8 +33,8 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: 800;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* font-weight: 800; */
+  /* font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; */
 }
 
 a {
@@ -91,7 +99,7 @@ img::-moz-selection {
   /* position: absolute; */
   border-bottom: 1px solid #e9ecef;
   background-color: white;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; */
 }
 
 #mainNav .navbar-brand {
@@ -221,7 +229,7 @@ header.masthead .site-heading .subheading {
   line-height: 1.1;
   display: block;
   margin: 10px 0 0;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; */
 }
 
 @media only screen and (min-width: 768px) {
@@ -245,14 +253,14 @@ header.masthead .post-heading .subheading {
   font-size: 24px;
   font-weight: 600;
   margin: 10px 0 30px;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; */
 }
 
 header.masthead .post-heading .meta {
   font-size: 20px;
   font-weight: 300;
   font-style: italic;
-  font-family: 'Lora', 'Times New Roman', serif;
+  /* font-family: 'Lora', 'Times New Roman', serif; */
 }
 
 header.masthead .post-heading .meta a {
@@ -330,13 +338,13 @@ header.masthead .post-heading .meta a {
   border-radius: 0;
   background: none;
   box-shadow: none !important;
-  font-family: 'Lora', 'Times New Roman', serif;
+  /* font-family: 'Lora', 'Times New Roman', serif; */
 }
 
 .floating-label-form-group input::-webkit-input-placeholder,
 .floating-label-form-group textarea::-webkit-input-placeholder {
   color: #868e96;
-  font-family: 'Lora', 'Times New Roman', serif;
+  /* font-family: 'Lora', 'Times New Roman', serif; */
 }
 
 .floating-label-form-group label {
@@ -385,20 +393,20 @@ footer .copyright {
   text-align: center;
 }
 
-.btn {
+.btn1 {
   font-size: 14px;
   font-weight: 800;
   padding: 15px 25px;
   letter-spacing: 1px;
   text-transform: uppercase;
   border-radius: 0;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; */
 }
 
-.btn-primary {
+/* .btn-primary {
   background-color: #0085A1;
   border-color: #0085A1;
-}
+} */
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
   color: #fff;
@@ -409,4 +417,8 @@ footer .copyright {
 .btn-lg {
   font-size: 16px;
   padding: 25px 35px;
+}
+
+.table {
+	font-size: 16px;
 }

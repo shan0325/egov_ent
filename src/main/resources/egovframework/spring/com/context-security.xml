@@ -17,6 +17,7 @@
 	<security:http pattern="/front/**" auto-config="true" use-expressions="true" authentication-manager-ref="frontAuthenticationManager">
  		<security:csrf disabled="true" />
  		
+ 		<security:intercept-url pattern="/front/eventprogram/request/**" access="hasAnyRole('ROLE_USER_MEMBER')" />
  		<security:intercept-url pattern="/front/**" access="permitAll" />
  		<!-- <security:intercept-url pattern="/front/**" access="hasAnyRole('ROLE_ADMIN,ROLE_USER_MEMBER')" /> -->
  	

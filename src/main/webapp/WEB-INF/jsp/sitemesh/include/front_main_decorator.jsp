@@ -43,10 +43,10 @@
 	          <a class="nav-link" href="<c:url value="/"/>">Home</a>
 	        </li>
 	        <li class="nav-item">
-	          <a class="nav-link" href="about.html">About</a>
+	          <a class="nav-link" href="<c:url value="/front/eventprogram/list.do?pageUnit=6"/>">Event</a>
 	        </li>
 	        <li class="nav-item">
-	          <a class="nav-link" href="post.html">Sample Post</a>
+	          <a class="nav-link" href="<c:url value="/"/>">게시판</a>
 	        </li>
 	        <c:choose>
 	        <c:when test="${user ne 'anonymousUser'}">
@@ -69,7 +69,7 @@
 	</nav>
 	
 	<!-- Page Header -->
-	  <header class="masthead" style="background-image: url('img/home-bg.jpg')">
+	  <header class="masthead" style="background-image: url('/front/img/home-bg.jpg')">
 	    <div class="overlay"></div>
 	    <div class="container">
 	      <div class="row">

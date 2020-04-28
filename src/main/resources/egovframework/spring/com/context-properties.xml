@@ -9,7 +9,8 @@
                 <entry key="pageUnit" value="10"/>
                 <entry key="pageSize" value="10"/>
                 <entry key="posblAtchFileSize" value="5242880"/>
-                <entry key="Globals.fileStorePath" value="/user/file/sht/"/>
+                <entry key="Globals.fileStorePath" value="/upload/"/>
+                <entry key="Globals.eventFileStorePath" value="/upload/event/"/>
                 <entry key="Globals.addedOptions" value="false"/>
             </map>
         </property>

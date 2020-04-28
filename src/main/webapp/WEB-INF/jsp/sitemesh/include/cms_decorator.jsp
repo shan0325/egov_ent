@@ -16,6 +16,7 @@
 	<link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 	
 	<script src="/js/jquery/jquery-3.0.0.js"></script>
+	<script src="/js/jquery/jquery.form.min.js"></script>
 	<script src="/bootstrap-4.4.1-dist/js/bootstrap.js"></script>
 	<script src="/bootstrap-datepicker-1.9.0/js/bootstrap-datepicker.js"></script>
 	<script src="/bootstrap-datepicker-1.9.0/locales/bootstrap-datepicker.ko.min.js" charset="UTF-8"></script>

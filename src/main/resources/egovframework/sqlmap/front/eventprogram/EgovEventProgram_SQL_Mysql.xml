@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="eventprogram">
+
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias alias="eventProgramVO" type="front.eventprogram.service.EventProgramVO"/>
+	<typeAlias alias="comDefaultVO" type="egovframework.com.cmm.ComDefaultVO"/>
+	
+	<sql id="epDetailSubquery">
+	<![CDATA[
+		SELECT ID,
+				GUBUN,
+				(SELECT CODE_NM FROM LETTCCMMNDETAILCODE WHERE CODE_ID = 'COM030' AND CODE = A.GUBUN) GUBUN_NAME,
+				TITLE,
+				CONTENT,
+				DATE_FORMAT(START_DATE, '%Y-%m-%d %H:%i') START_DATE,
+				DATE_FORMAT(END_DATE, '%Y-%m-%d %H:%i') END_DATE,
+				DATE_FORMAT(REQ_START_DATE, '%Y-%m-%d %H:%i') REQ_START_DATE,
+				DATE_FORMAT(REQ_END_DATE, '%Y-%m-%d %H:%i') REQ_END_DATE,
+				CASE 
+					WHEN REQ_START_DATE > NOW() THEN '0'
+					WHEN REQ_END_DATE <= NOW() THEN '2'
+					ELSE '1'
+				END STATUS,
+				REQ_MAX_PERSON_NUMBER,
+				REQTIME_MAX_PERSON_NUMBER,
+				HOST,
+				LOCATION,
+				TEL,
+				TARGET_PERSION,
+				USE_YN,
+				REG_USER_ID,
+				DATE_FORMAT(REG_DATE, '%Y-%m-%d') REG_DATE,
+				DATE_FORMAT(MOD_DATE, '%Y-%m-%d') MOD_DATE,
+				MAIN_IMG_ATCH_FILE_ID,
+				B.FILE_SN,
+				A.ATCH_FILE_ID
+		FROM LETTNEVENT_PROGRAM_MASTER A
+			LEFT JOIN (
+				SELECT B.ATCH_FILE_ID, MAX(FILE_SN) FILE_SN
+				FROM LETTNFILE A
+					JOIN LETTNFILEDETAIL B
+						ON A.ATCH_FILE_ID = B.ATCH_FILE_ID
+				WHERE A.USE_AT = 'Y'
+				GROUP BY B.ATCH_FILE_ID
+			) B
+			ON A.MAIN_IMG_ATCH_FILE_ID = B.ATCH_FILE_ID
+	]]>
+	</sql>
+	
+	<select id="eventProgramDAO.getTotalListCnt" parameterClass="comDefaultVO" resultClass="int">
+		SELECT COUNT(*)
+		FROM (
+			<include refid="epDetailSubquery"/>
+		) B
+		WHERE 1 = 1
+		AND USE_YN = 'Y'
+		<isEqual prepend="AND" property="searchCondition" compareValue="1">
+			GUBUN_NAME LIKE CONCAT('%', #searchKeyword# ,'%')
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="2">
+			TITLE LIKE CONCAT('%', #searchKeyword# ,'%')
+		</isEqual>
+	</select>
+	
+	<select id="eventProgramDAO.getList" parameterClass="comDefaultVO" resultClass="egovMap">
+		SELECT *
+		FROM (
+			<include refid="epDetailSubquery"/>
+		) B
+		WHERE 1 = 1
+		AND USE_YN = 'Y'
+		<isEqual prepend="AND" property="searchCondition" compareValue="1">
+			GUBUN_NAME LIKE CONCAT('%', #searchKeyword# ,'%')
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="2">
+			TITLE LIKE CONCAT('%', #searchKeyword# ,'%')
+		</isEqual>
+		ORDER BY REG_DATE DESC, ID DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="eventProgramDAO.getOne" parameterClass="eventProgramVO" resultClass="egovMap">
+		SELECT *
+		FROM (
+			<include refid="epDetailSubquery"/>
+		) B
+		WHERE ID = #id#
+		AND USE_YN = 'Y'
+	</select>
+	
+</sqlMap>
