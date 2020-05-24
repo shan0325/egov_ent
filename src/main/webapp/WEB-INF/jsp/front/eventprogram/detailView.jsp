@@ -42,6 +42,9 @@
 							<c:when test="${detail.status eq '2'}">
 								<span class="badge badge-pill badge-secondary">마감</span>
 							</c:when>
+							<c:when test="${detail.status eq '3'}">
+								<span class="badge badge-pill badge-secondary">마감(선착순)</span>
+							</c:when>		
 							<c:otherwise>
 								<span class="badge badge-pill badge-success">접수중</span>
 							</c:otherwise>
@@ -67,6 +70,11 @@
 							<dt class="col-sm-3">대상자</dt>
 							<dd class="col-sm-9"><c:out value="${detail.targetPersion}"/> </dd>
 							
+							<c:if test="${detail.firstComeYn eq 'Y'}">
+								<dt class="col-sm-3">신청인원</dt>
+								<dd class="col-sm-9"><c:out value="${detail.reqMaxPersonNumber}"/> / <c:out value="${detail.reqMemberTotalCount}"/></dd>
+							</c:if>
+							
 							<dt class="col-sm-3">첨부파일</dt>
 							<dd class="col-sm-9">
 								<c:if test="${not empty atchFiles}">
@@ -90,14 +98,40 @@
 
 		<div class="d-flex justify-content-end mt-5">
 			<c:if test="${detail.status eq '1'}">
-				<a class="btn btn-primary mr-2" id="reqProgramBtn" href="#" role="button">신청</a>
+				<a href="#" class="btn btn-danger mr-2" id="reqProgramBtn" role="button">신청</a>
 			</c:if>
-			<a class="btn btn-secondary" href="<c:url value="/front/eventprogram/list.do?pageUnit=6"/>" role="button">목록</a>
+			<a href="#" class="btn btn-secondary" id="listBtn" role="button">목록</a>
 		</div>
 	</div>
 	
+	<form id="commonForm">
+		<input type="hidden" name="pageIndex" value="<c:out value="${searchVO.pageIndex}"/>" />
+	</form>
+	
 	<script type="text/javascript">
 		$(function() {
+			var error = '${error}';
+			if(error) {
+				if(error == '1') {
+					alert("접수기간이 아닙니다.");
+				}
+				else if(error == '2') {
+					alert("접수가 마감되었습니다.");
+				}
+				else if(error == '3') {
+					alert("여러건이 신청되어 오류가 발생하였습니다. 담당자에게 확인해주세요");
+				}
+				else if(error == '4') {
+					alert("이미 신청하였습니다.");
+				}
+			}
+			
+			$("#listBtn").on("click", function(e) {
+				e.preventDefault();
+				$("#commonForm").attr("action", "<c:url value="/front/eventprogram/list.do"/>");
+				$("#commonForm").submit();
+			});
+			
 			$("#reqProgramBtn").on("click", function(e) {
 				e.preventDefault();
 				<c:if test="${user eq 'anonymousUser'}">
@@ -106,7 +140,9 @@
 					return;
 				</c:if>
 				
-				window.location.href = '<c:url value="/front/eventprogram/request/requestView.do?id=${detail.id}" />';
+				$("#commonForm").append("<input type='hidden' name='id' value='<c:out value="${detail.id}"/>' />");
+				$("#commonForm").attr("action", "<c:url value="/front/eventprogram/request/requestView.do"/>");
+				$("#commonForm").submit();
 			});
 		});
 	</script>

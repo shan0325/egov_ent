@@ -30,5 +30,10 @@ public class CustomPasswordEncoder implements PasswordEncoder {
 		}
 		return false;
 	}
+	
+	public static void main(String[] args) throws Exception {
+		String password = EgovFileScrty.encryptPassword("1", "user2");
+		System.out.println(password);
+	}
 
 }

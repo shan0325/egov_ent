@@ -44,6 +44,7 @@
 				</div>
 				
 				<h3>행사프로그램관리 등록</h3>
+				<br/>
 				<form id="eventProgramMasterForm">
 					<input type="hidden" name="id" value="${detail.id}"/>
 					<input type="hidden" name="startDate" id="startDate" />
@@ -60,6 +61,17 @@
 							</select>
 						</div>
 					</div>
+					<fieldset class="form-group">
+						<legend class="col-form-label col-sm-2 px-0 pt-0">선착순</legend>
+							<div class="form-check form-check-inline">
+								<input class="form-check-input" type="radio" name="firstComeYn" id="firstComeYn_Y" value="Y" ${empty detail or detail.firstComeYn eq 'Y' ? 'checked' : ''}>
+								<label class="form-check-label" for="firstComeYn_Y">선착순</label>
+							</div>
+							<div class="form-check form-check-inline">
+								<input class="form-check-input" type="radio" name="firstComeYn" id="firstComeYn_N" value="N" ${detail.firstComeYn eq 'N' ? 'checked' : ''}>
+								<label class="form-check-label" for="firstComeYn_N">제한없음(추첨제)</label>
+							</div>
+					</fieldset>
 					<div class="form-row">
 						<div class="form-group col-md-6">
 							<label for="title">프로그램명</label> 

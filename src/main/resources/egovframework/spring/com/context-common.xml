@@ -64,10 +64,12 @@
         
     <!-- For Pagination Tag 설정-->
     <bean id="imageRenderer" class="egovframework.com.cmm.ImagePaginationRenderer"/>
+    <bean id="bootStrapRenderer" class="egovframework.com.cmm.BootstrapPaginationRenderer"/>
     <bean id="paginationManager" class="egovframework.rte.ptl.mvc.tags.ui.pagination.DefaultPaginationManager">
         <property name="rendererType">
             <map>
                 <entry key="image" value-ref="imageRenderer"/> 
+                <entry key="bootStrap" value-ref="bootStrapRenderer"/> 
             </map>
         </property>
     </bean>

@@ -23,6 +23,7 @@
 	<link href="/front/css/clean-blog.css" rel="stylesheet">
 	
 	<script src="/js/jquery/jquery-3.0.0.js"></script>
+	<script src="/js/jquery/jquery.form.min.js"></script>
 	<script src="/bootstrap-4.4.1-dist/js/bootstrap.bundle.js"></script>
 	
 	<decorator:head />
@@ -43,7 +44,7 @@
 	          <a class="nav-link" href="<c:url value="/"/>">Home</a>
 	        </li>
 	        <li class="nav-item">
-	          <a class="nav-link" href="<c:url value="/front/eventprogram/list.do?pageUnit=6"/>">Event</a>
+	          <a class="nav-link" href="<c:url value="/front/eventprogram/list.do"/>">Event</a>
 	        </li>
 	        <li class="nav-item">
 	          <a class="nav-link" href="<c:url value="/"/>">게시판</a>

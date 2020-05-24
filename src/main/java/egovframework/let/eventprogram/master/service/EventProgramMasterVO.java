@@ -28,5 +28,6 @@ public class EventProgramMasterVO {
 	private String modDate; // 수정일시
 	private String mainImgAtchFileId; // 메인이미지 파일 아이디
 	private String atchFileId; // 첨부파일 파일 아이디
+	private String firstComeYn; // 선착순 여부
 	
 }

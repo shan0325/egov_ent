@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import egovframework.com.cmm.ComDefaultVO;
 import egovframework.com.cmm.service.EgovFileMngService;
@@ -34,7 +35,10 @@ public class EventProgramController {
 	
 	
 	@RequestMapping(value="/front/eventprogram/list.do")
-	public String listView(@ModelAttribute("searchVO") ComDefaultVO searchVO, ModelMap model) {
+	public String listView(@RequestParam(required=false) String pageUnit, @ModelAttribute("searchVO") ComDefaultVO searchVO, ModelMap model) {
+		if(EgovStringUtil.isEmpty(pageUnit)) {
+			searchVO.setPageUnit(6);
+		}
 		
 		// 페이징
 		PaginationInfo paginationInfo = new PaginationInfo();
@@ -58,8 +62,7 @@ public class EventProgramController {
 	}
 	
 	@RequestMapping(value="/front/eventprogram/detailView.do")
-	public String detailView(@ModelAttribute EventProgramVO eventProgramVO, ModelMap model) throws Exception {
-		
+	public String detailView(@ModelAttribute("searchVO") ComDefaultVO searchVO, @ModelAttribute EventProgramVO eventProgramVO, ModelMap model) throws Exception {
 		CmmnDetailCodeVO cmmnDetailCodeVO = new CmmnDetailCodeVO();
 		cmmnDetailCodeVO.setSearchCondition("1");
 		cmmnDetailCodeVO.setSearchKeyword("COM030");

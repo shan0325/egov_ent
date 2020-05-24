@@ -47,8 +47,8 @@ a:focus, a:hover {
 }
 
 blockquote {
-  font-style: italic;
-  color: #868e96;
+  /* font-style: italic;
+  color: #868e96; */
 }
 
 .section-heading {
@@ -416,7 +416,8 @@ footer .copyright {
 
 .btn-lg {
   font-size: 16px;
-  padding: 25px 35px;
+  /* padding: 25px 35px; */
+  padding: 0.6rem 2rem;
 }
 
 .table {

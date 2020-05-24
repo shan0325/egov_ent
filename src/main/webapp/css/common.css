@@ -7,7 +7,7 @@ hr, button img{display:none;}
 a{text-decoration:none;}
 a:hover, a:active, a:focus{text-decoration:none;}
 textarea{overflow:auto;}
-legend {position:absolute; top:0; left:0; width:0; height:0; overflow:hidden; visibility:hidden; font-size:0; line-height:0;} /* For Screen Reader */
+/* legend {position:absolute; top:0; left:0; width:0; height:0; overflow:hidden; visibility:hidden; font-size:0; line-height:0;} */ /* For Screen Reader */
 caption{display:none;}
 img{border:0; vertical-align: middle;}
 html, body{margin:0; padding:0; height: 100%;width: 100%;}

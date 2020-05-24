@@ -7,7 +7,7 @@
 	<typeAlias alias="eventProgramMasterVO" type="egovframework.let.eventprogram.master.service.EventProgramMasterVO"/>
 	<typeAlias alias="comDefaultVO" type="egovframework.com.cmm.ComDefaultVO"/>
 	
-	<sql id="detailSubquery">
+	<sql id="eventprogramMasterDetailView">
 		SELECT ID,
 				GUBUN,
 				(SELECT CODE_NM FROM LETTCCMMNDETAILCODE WHERE CODE_ID = 'COM030' AND CODE = A.GUBUN) GUBUN_NAME,
@@ -17,8 +17,8 @@
 				DATE_FORMAT(END_DATE, '%Y-%m-%d %H:%i') END_DATE,
 				DATE_FORMAT(REQ_START_DATE, '%Y-%m-%d %H:%i') REQ_START_DATE,
 				DATE_FORMAT(REQ_END_DATE, '%Y-%m-%d %H:%i') REQ_END_DATE,
-				REQ_MAX_PERSON_NUMBER,
-				REQTIME_MAX_PERSON_NUMBER,
+				IFNULL(REQ_MAX_PERSON_NUMBER, 0) REQ_MAX_PERSON_NUMBER,
+				IFNULL(REQTIME_MAX_PERSON_NUMBER, 0) REQTIME_MAX_PERSON_NUMBER,
 				HOST,
 				LOCATION,
 				TEL,
@@ -28,14 +28,15 @@
 				DATE_FORMAT(REG_DATE, '%Y-%m-%d') REG_DATE,
 				DATE_FORMAT(MOD_DATE, '%Y-%m-%d') MOD_DATE,
 				MAIN_IMG_ATCH_FILE_ID,
-				ATCH_FILE_ID
+				ATCH_FILE_ID,
+				FIRST_COME_YN
 		FROM LETTNEVENT_PROGRAM_MASTER A
 	</sql>
 	
 	<select id="eventProgramMasterDAO.getTotalListCnt" parameterClass="comDefaultVO" resultClass="int">
 		SELECT COUNT(*)
 		FROM (
-			<include refid="detailSubquery"/>
+			<include refid="eventprogramMasterDetailView"/>
 		) B
 		WHERE 1 = 1
 		<isEqual prepend="AND" property="searchCondition" compareValue="1">
@@ -47,9 +48,10 @@
 	</select>
 	
 	<select id="eventProgramMasterDAO.getList" parameterClass="comDefaultVO" resultClass="egovMap">
-		SELECT *
+		SELECT B.*,
+			FNC_EVENT_PROGRAM_REQ_MEM_COUNT(B.ID) REQ_MEMBER_TOTAL_COUNT
 		FROM (
-			<include refid="detailSubquery"/>
+			<include refid="eventprogramMasterDetailView"/>
 		) B
 		WHERE 1 = 1
 		<isEqual prepend="AND" property="searchCondition" compareValue="1">
@@ -63,7 +65,7 @@
 	</select>
 	
 	<select id="eventProgramMasterDAO.getOne" parameterClass="eventProgramMasterVO" resultClass="egovMap">
-		<include refid="detailSubquery"/>
+		<include refid="eventprogramMasterDetailView"/>
 		WHERE ID = #id#
 	</select>
 	
@@ -88,7 +90,8 @@
 				REG_USER_ID,
 				REG_DATE,
 				MAIN_IMG_ATCH_FILE_ID,
-				ATCH_FILE_ID
+				ATCH_FILE_ID,
+				FIRST_COME_YN
 			)
 			VALUES
 			(
@@ -109,7 +112,8 @@
 				#regUserId#,
 				NOW(),
 				#mainImgAtchFileId#,
-				#atchFileId#
+				#atchFileId#,
+				#firstComeYn#
 			)
 		<selectKey keyProperty="id" resultClass="long">
 		    SELECT LAST_INSERT_ID()
@@ -134,7 +138,8 @@
 				USE_YN = #useYn#,
 				MOD_DATE = NOW(),
 				MAIN_IMG_ATCH_FILE_ID = #mainImgAtchFileId#,
-				ATCH_FILE_ID = #atchFileId#
+				ATCH_FILE_ID = #atchFileId#,
+				FIRST_COME_YN = #firstComeYn#
 		WHERE ID = #id#
 	</update>
 	

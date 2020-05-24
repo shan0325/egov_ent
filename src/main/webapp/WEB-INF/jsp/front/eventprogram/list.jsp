@@ -27,7 +27,6 @@
 	<div class="container">
 		<form name="searchForm" id="searchForm" class="form-inline justify-content-center my-5">
 			<input type="hidden" name="pageIndex" value="<c:out value="${searchVO.pageIndex}"/>" />
-			<input type="hidden" name="pageUnit" value="<c:out value="${searchVO.pageUnit}"/>" />
 			
 			<div class="form-group mb-2">
 				<select name="searchCondition" class="form-control">
@@ -45,7 +44,7 @@
 			<c:if test="${not empty list and fn:length(list) > 0}">
 				<c:forEach var="obj" items="${list}" varStatus="status">
 					<div class="col mb-4">
-						<a href="${pageContext.request.contextPath}/front/eventprogram/detailView.do?id=${obj.id}">
+						<a href="${pageContext.request.contextPath}/front/eventprogram/detailView.do?id=${obj.id}&pageIndex=${searchVO.pageIndex}">
 						<div class="card h-100">
 							<c:if test="${not empty obj.mainImgAtchFileId and not empty obj.fileSn}">
 					      		<img class="card-img-top" src="/cmm/fms/getImage.do?atchFileId=${obj.mainImgAtchFileId}&amp;fileSn=${obj.fileSn}" alt="메인 이미지" height="300"/>
@@ -55,11 +54,13 @@
 									<c:when test="${obj.status eq '0'}">
 										<span class="badge badge-pill badge-warning">진행전</span>
 									</c:when>
-									<c:when test="${obj.status eq '2'}">
+									<c:when test="${obj.status eq '2' or obj.status eq '3'}">
 										<span class="badge badge-pill badge-secondary">마감</span>
 									</c:when>
 									<c:otherwise>
-										<span class="badge badge-pill badge-success">접수중</span>
+										<span class="badge badge-pill badge-success">
+											접수중<c:if test="${obj.firstComeYn eq 'Y'}"> (선착순)</c:if>
+										</span>
 									</c:otherwise>
 								</c:choose>
 								<p class="card-text mt-3"><c:out value="${obj.title}"/></p>
@@ -121,7 +122,7 @@
 		<!-- 페이지 네비게이션 시작 -->
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
-                <ui:pagination paginationInfo = "${paginationInfo}" type="image" jsFunction="linkPage"/>
+                <ui:pagination paginationInfo = "${paginationInfo}" type="bootStrap" jsFunction="linkPage"/>
             </ul>
         </nav>
         <!-- //페이지 네비게이션 끝 -->

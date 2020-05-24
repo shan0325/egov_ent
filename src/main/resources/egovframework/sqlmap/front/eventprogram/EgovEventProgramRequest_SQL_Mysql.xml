@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="eventProgramRequest">
+
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias alias="eventProgramVO" type="front.eventprogram.service.EventProgramVO"/>
+	<typeAlias alias="eventProgramRequestVO" type="front.eventprogram.service.EventProgramRequestVO"/>
+	<typeAlias alias="eventProgramRequestMemberVO" type="front.eventprogram.service.EventProgramRequestMemberVO"/>
+	<typeAlias alias="comDefaultVO" type="egovframework.com.cmm.ComDefaultVO"/>
+	
+	<insert id="eventProgramRequestDAO.add" parameterClass="eventProgramRequestVO">
+		INSERT INTO LETTNEVENT_PROGRAM_REQUEST
+		(
+			MASTER_ID,
+			REQ_USER_ID,
+			REQ_NAME,
+			REQ_PHONE,
+			REG_DATE,
+			REQUEST_STATE,
+			REQ_EMAIL,
+			REQ_INTRODUCTION,
+			SAVE_STATE,
+			ATCH_FILE_ID
+		)
+		VALUES
+		(
+			#masterId#,
+			#reqUserId#,
+			#reqName#,
+			#reqPhone#,
+			NOW(),
+			'0',
+			#reqEmail#,
+			#reqIntroduction#,
+			#saveState#,
+			#atchFileId#
+		)
+		<selectKey keyProperty="id" resultClass="long">
+	        SELECT LAST_INSERT_ID()
+	   	</selectKey>
+	</insert>
+	
+	<insert id="eventProgramRequestDAO.addRequestMember" parameterClass="eventProgramRequestMemberVO">
+		INSERT INTO LETTNEVENT_PROGRAM_REQUEST_MEMBER
+		(
+			REQUEST_ID,
+			NAME,
+			AGE,
+			GENDER,
+			ETC
+		)
+		VALUES
+		(
+			#requestId#,
+			#name#,
+			#age#,
+			#gender#,
+			#etc#
+		)
+	</insert>
+	
+	<select id="eventProgramRequestDAO.getReqCountByUserId" parameterClass="eventProgramRequestVO" resultClass="int">
+		SELECT COUNT(*) CNT
+		FROM LETTNEVENT_PROGRAM_REQUEST
+		WHERE 1 = 1
+		AND MASTER_ID = #masterId#
+		AND REQ_USER_ID = #reqUserId#
+	</select>
+	
+	<select id="eventProgramRequestDAO.getRequestByUserId" parameterClass="eventProgramRequestVO" resultClass="egovMap">
+		SELECT 	ID,
+				MASTER_ID,
+				REQ_USER_ID,
+				REQ_NAME,
+				REQ_PHONE,
+				REG_DATE,
+				MOD_DATE,
+				REQ_EMAIL,
+				REQ_INTRODUCTION,
+				SAVE_STATE,
+				ATCH_FILE_ID
+		FROM LETTNEVENT_PROGRAM_REQUEST
+		WHERE 1 = 1
+		AND MASTER_ID = #masterId#
+		AND REQ_USER_ID = #reqUserId#
+	</select>
+	
+	<select id="eventProgramRequestDAO.getSaveRequestMemberList" parameterClass="eventProgramRequestVO" resultClass="egovMap">
+		SELECT 	ID,
+				REQUEST_ID,
+				NAME,
+				AGE,
+				GENDER,
+				ETC
+		FROM LETTNEVENT_PROGRAM_REQUEST_MEMBER
+		WHERE REQUEST_ID = #id#
+	</select>
+	
+	<update id="eventProgramRequestDAO.mod" parameterClass="eventProgramRequestVO">
+		UPDATE LETTNEVENT_PROGRAM_REQUEST
+		SET
+			REQ_NAME = #reqName#,
+			REQ_PHONE = #reqPhone#,
+			REG_DATE = NOW(),
+			REQ_EMAIL = #reqEmail#,
+			REQ_INTRODUCTION = #reqIntroduction#,
+			SAVE_STATE = #saveState#,
+			ATCH_FILE_ID = #atchFileId#
+		WHERE ID = #id#	
+	</update>
+	
+	<delete id="eventProgramRequestDAO.deleteRequestMember" parameterClass="eventProgramRequestVO">
+		DELETE FROM LETTNEVENT_PROGRAM_REQUEST_MEMBER WHERE REQUEST_ID = #id#
+	</delete>
+	
+	<select id="eventProgramRequestDAO.getRequestMemberTotalCount" parameterClass="eventProgramRequestVO" resultClass="long">
+		SELECT FNC_EVENT_PROGRAM_REQ_MEM_COUNT(#masterId#) COUNT;
+	</select>
+	
+</sqlMap>

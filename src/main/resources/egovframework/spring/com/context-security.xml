@@ -25,7 +25,6 @@
  			login-page="/front/login/loginView.do"
  			login-processing-url="/front/login/actionSecurityLogin.do"
  			default-target-url="/front/main.do"
- 			authentication-failure-url="/uat/uia/actionSecurityLogin.do?login_error=1"
  			username-parameter="id"
  			password-parameter="password"
  		/>

@@ -18,13 +18,9 @@
 				DATE_FORMAT(END_DATE, '%Y-%m-%d %H:%i') END_DATE,
 				DATE_FORMAT(REQ_START_DATE, '%Y-%m-%d %H:%i') REQ_START_DATE,
 				DATE_FORMAT(REQ_END_DATE, '%Y-%m-%d %H:%i') REQ_END_DATE,
-				CASE 
-					WHEN REQ_START_DATE > NOW() THEN '0'
-					WHEN REQ_END_DATE <= NOW() THEN '2'
-					ELSE '1'
-				END STATUS,
-				REQ_MAX_PERSON_NUMBER,
-				REQTIME_MAX_PERSON_NUMBER,
+				FNC_EVENT_PROGRAM_STATE(A.ID) STATUS,
+				IFNULL(REQ_MAX_PERSON_NUMBER, 0) REQ_MAX_PERSON_NUMBER,
+				IFNULL(REQTIME_MAX_PERSON_NUMBER, 0) REQTIME_MAX_PERSON_NUMBER,
 				HOST,
 				LOCATION,
 				TEL,
@@ -35,7 +31,8 @@
 				DATE_FORMAT(MOD_DATE, '%Y-%m-%d') MOD_DATE,
 				MAIN_IMG_ATCH_FILE_ID,
 				B.FILE_SN,
-				A.ATCH_FILE_ID
+				A.ATCH_FILE_ID,
+				FIRST_COME_YN
 		FROM LETTNEVENT_PROGRAM_MASTER A
 			LEFT JOIN (
 				SELECT B.ATCH_FILE_ID, MAX(FILE_SN) FILE_SN
@@ -65,7 +62,8 @@
 	</select>
 	
 	<select id="eventProgramDAO.getList" parameterClass="comDefaultVO" resultClass="egovMap">
-		SELECT *
+		SELECT B.*,
+			FNC_EVENT_PROGRAM_REQ_MEM_COUNT(B.ID) REQ_MEMBER_TOTAL_COUNT
 		FROM (
 			<include refid="epDetailSubquery"/>
 		) B
@@ -82,7 +80,8 @@
 	</select>
 	
 	<select id="eventProgramDAO.getOne" parameterClass="eventProgramVO" resultClass="egovMap">
-		SELECT *
+		SELECT B.*,
+			FNC_EVENT_PROGRAM_REQ_MEM_COUNT(B.ID) REQ_MEMBER_TOTAL_COUNT
 		FROM (
 			<include refid="epDetailSubquery"/>
 		) B

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="egovEventprogramRequest">
+
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias alias="egovEventProgramRequestVO" type="egovframework.let.eventprogram.request.service.EgovEventProgramRequestVO"/>
+	<typeAlias alias="egovEventProgramRequestMemberVO" type="egovframework.let.eventprogram.request.service.EgovEventProgramRequestMemberVO"/>
+	<typeAlias alias="comDefaultVO" type="egovframework.com.cmm.ComDefaultVO"/>
+	
+	<sql id="egovEventprogramRequestDetailView">
+		SELECT 	A.ID,
+				A.MASTER_ID,
+				B.TITLE,
+				A.REQ_USER_ID,
+				A.REQ_NAME,
+				A.REQ_PHONE,
+				DATE_FORMAT(A.REG_DATE, '%Y-%m-%d') REG_DATE,
+				DATE_FORMAT(A.MOD_DATE, '%Y-%m-%d') MOD_DATE,
+				A.REQUEST_STATE,
+				A.REQ_EMAIL,
+				A.REQ_INTRODUCTION,
+				A.SAVE_STATE,
+				A.ATCH_FILE_ID
+		FROM LETTNEVENT_PROGRAM_REQUEST A
+			LEFT JOIN LETTNEVENT_PROGRAM_MASTER B
+				ON A.MASTER_ID = B.ID
+	</sql>
+	
+	<select id="egovEventProgramRequestDAO.getTotalListCnt" parameterClass="comDefaultVO" resultClass="int">
+		SELECT COUNT(*)
+		FROM (
+			<include refid="egovEventprogramRequestDetailView"/>
+		) B
+		WHERE 1 = 1
+		<isNotEmpty prepend="AND" property="searchKeyword">
+			<isEqual property="searchCondition" compareValue="1">
+				TITLE LIKE CONCAT('%', #searchKeyword# ,'%')
+			</isEqual>
+			<isEqual property="searchCondition" compareValue="2">
+				MASTER_ID = #searchKeyword#
+			</isEqual>
+			<isEqual property="searchCondition" compareValue="3">
+				REQ_USER_ID LIKE CONCAT('%', #searchKeyword# ,'%')
+			</isEqual>
+			<isEqual property="searchCondition" compareValue="4">
+				REQ_NAME LIKE CONCAT('%', #searchKeyword# ,'%')
+			</isEqual>
+		</isNotEmpty>
+	</select>
+	
+	<select id="egovEventProgramRequestDAO.getList" parameterClass="comDefaultVO" resultClass="egovMap">
+		SELECT B.*,
+				(SELECT COUNT(*) FROM LETTNEVENT_PROGRAM_REQUEST_MEMBER WHERE REQUEST_ID = B.ID) MEMBER_CNT
+		FROM (
+			<include refid="egovEventprogramRequestDetailView"/>
+		) B
+		WHERE 1 = 1
+		<isNotEmpty prepend="AND" property="searchKeyword">
+			<isEqual property="searchCondition" compareValue="1">
+				TITLE LIKE CONCAT('%', #searchKeyword# ,'%')
+			</isEqual>
+			<isEqual property="searchCondition" compareValue="2">
+				MASTER_ID = #searchKeyword#
+			</isEqual>
+			<isEqual property="searchCondition" compareValue="3">
+				REQ_USER_ID LIKE CONCAT('%', #searchKeyword# ,'%')
+			</isEqual>
+			<isEqual property="searchCondition" compareValue="4">
+				REQ_NAME LIKE CONCAT('%', #searchKeyword# ,'%')
+			</isEqual>
+		</isNotEmpty>
+		ORDER BY REG_DATE DESC, ID DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="egovEventProgramRequestDAO.getOne" parameterClass="egovEventProgramRequestVO" resultClass="egovMap">
+		SELECT *
+		FROM (
+			<include refid="egovEventprogramRequestDetailView"/>
+		) B
+		WHERE ID = #id#
+	</select>
+	
+	<select id="egovEventProgramRequestDAO.getEventRequestMemberList" parameterClass="egovEventProgramRequestVO" resultClass="egovMap">
+		SELECT 	ID,
+				REQUEST_ID,
+				NAME,
+				AGE,
+				GENDER,
+				ETC
+		FROM LETTNEVENT_PROGRAM_REQUEST_MEMBER
+		WHERE REQUEST_ID = #id#
+	</select>
+	
+	<update id="egovEventProgramRequestDAO.mod" parameterClass="egovEventProgramRequestVO">
+		UPDATE LETTNEVENT_PROGRAM_REQUEST
+		SET
+			REQ_NAME = #reqName#,
+			REQ_PHONE = #reqPhone#,
+			MOD_DATE = NOW(),
+			REQUEST_STATE = #requestState#,
+			REQ_EMAIL = #reqEmail#,
+			REQ_INTRODUCTION = #reqIntroduction#,
+			ATCH_FILE_ID = #atchFileId#
+		WHERE ID = #id#	
+	</update>
+	
+	<delete id="egovEventProgramRequestDAO.deleteRequestMember" parameterClass="egovEventProgramRequestVO">
+		DELETE FROM LETTNEVENT_PROGRAM_REQUEST_MEMBER WHERE REQUEST_ID = #id#
+	</delete>
+	
+	<insert id="egovEventProgramRequestDAO.addRequestMember" parameterClass="egovEventProgramRequestMemberVO">
+		INSERT INTO LETTNEVENT_PROGRAM_REQUEST_MEMBER
+		(
+			REQUEST_ID,
+			NAME,
+			AGE,
+			GENDER,
+			ETC
+		)
+		VALUES
+		(
+			#requestId#,
+			#name#,
+			#age#,
+			#gender#,
+			#etc#
+		)
+	</insert>
+</sqlMap>

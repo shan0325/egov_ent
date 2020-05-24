@@ -10,7 +10,7 @@
 	<meta http-equiv="Content-Language" content="ko" >
 	<link href="<c:url value='/'/>css/common.css" rel="stylesheet" type="text/css" >
 	
-	<title>행사프로그램관리</title>
+	<title>행사프로그램신청관리</title>
 	
 </head>
 
@@ -37,21 +37,23 @@
 				            <li>&gt;</li>
 				            <li>행사프로그램관리</li>
 				            <li>&gt;</li>
-				            <li><strong>행사프로그램관리</strong></li>
+				            <li><strong>행사프로그램신청관리</strong></li>
 				        </ul>
 				    </div>
 				</div>
 				
-				<h3>행사프로그램관리</h3>
-				
+				<h3>행사프로그램신청관리</h3>
+
 				<form name="searchForm" id="searchForm" class="form-inline justify-content-end">
 					<input type="hidden" name="pageIndex" value="<c:out value="${searchVO.pageIndex}"/>" />
 					<input type="hidden" name="pageUnit" value="<c:out value="${searchVO.pageUnit}"/>" />
 					
 					<div class="form-group mb-2">
 						<select name="searchCondition" class="form-control">
-							<option value="1" ${searchVO.searchCondition eq 1 ? 'selected' : ''}>프로그램구분</option>
-							<option value="2" ${searchVO.searchCondition eq 2 ? 'selected' : ''}>프로그램명</option>
+							<option value="1" ${searchVO.searchCondition eq 1 ? 'selected' : ''}>프로그램명</option>
+							<option value="2" ${searchVO.searchCondition eq 2 ? 'selected' : ''}>프로그램아이디</option>
+							<option value="3" ${searchVO.searchCondition eq 3 ? 'selected' : ''}>아이디</option>
+							<option value="4" ${searchVO.searchCondition eq 4 ? 'selected' : ''}>이름</option>
 						</select>
 					</div>
 					<div class="form-group mx-sm-3 mb-2">
@@ -63,26 +65,26 @@
 				<table class="table">
 					<colgroup>
 						<col width="5%" />
-						<col width="10%" />
 						<col width="*" />
 						<col width="15%" />
 						<col width="15%" />
+						<col width="15%" />
+						<col width="5%" />
 						<col width="10%" />
 						<col width="5%" />
-						<col width="7%" />
-						<col width="7%" />
+						<col width="5%" />
 					</colgroup>
 				  <thead>
 				    <tr>
 				      <th scope="col">순서</th>
-				      <th scope="col">프로그램구분</th>
 				      <th scope="col">프로그램명</th>
-				      <th scope="col">프로그램기간</th>
-				      <th scope="col">접수기간</th>
-				      <th scope="col">등록일시</th>
-				      <th scope="col">사용여부</th>
+				      <th scope="col">아이디</th>
+				      <th scope="col">이름</th>
+				      <th scope="col">휴대폰</th>
 				      <th scope="col">참여자수</th>
-				      <th scope="col">신청자보기</th>
+				      <th scope="col">등록일</th>
+				      <th scope="col">저장구분</th>
+				      <th scope="col">신청상태</th>
 				    </tr>
 				  </thead>
 				  <tbody>
@@ -91,40 +93,43 @@
 				  		<c:forEach var="obj" items="${list}" varStatus="status">
 					    <tr>
 					      <th scope="row">${paginationInfo.totalRecordCount - ((paginationInfo.currentPageNo - 1) * paginationInfo.recordCountPerPage) - status.index}</th>
-					      <td><c:out value="${obj.gubunName}"/></td>
 					      <td><a href="#" onclick="updateView(${obj.id}); return false;"><c:out value="${obj.title}"/></a></td>
-					      <td><c:out value="${obj.startDate}"/> ~ <c:out value="${obj.endDate}"/></td>
-					      <td><c:out value="${obj.reqStartDate}"/> ~ <c:out value="${obj.reqEndDate}"/></td>
+					      <td><c:out value="${obj.reqUserId}"/></td>
+					      <td><c:out value="${obj.reqName}"/></td>
+					      <td><c:out value="${obj.reqPhone}"/></td>
+					      <td><c:out value="${obj.memberCnt}"/></td>
 					      <td><c:out value="${obj.regDate}"/></td>
-					      <td><c:out value="${obj.useYn}"/></td>
 					      <td>
-					      	<c:if test="${obj.firstComeYn eq 'Y'}">
-					      		선착순
+					      	<c:if test="${obj.saveState eq '0'}">
+								<span class="badge badge-primary">임시저장</span>					      	
 					      	</c:if>
-					      	<c:if test="${obj.firstComeYn eq 'N'}">
-					      		추첨
+					      	<c:if test="${obj.saveState eq '1'}">
+					      		<span class="badge badge-success">저장완료</span>
 					      	</c:if>
-					      	(<c:out value="${obj.reqMaxPersonNumber}"/> / <c:out value="${obj.reqMemberTotalCount}"/>)
 					      </td>
 					      <td>
-					      	<a href="/let/eventprogram/request/listView.do?searchCondition=2&searchKeyword=${obj.id}" class="badge badge-primary">바로가기</a>
+					      	<c:if test="${obj.requestState eq '0'}">
+					      		<span class="badge badge-primary">대기</span>	
+					      	</c:if>
+					      	<c:if test="${obj.requestState eq '1'}">
+					      		<span class="badge badge-success">승인</span>	
+					      	</c:if>
+					      	<c:if test="${obj.requestState eq '2'}">
+					      		<span class="badge badge-danger">취소</span>	
+					      	</c:if>
 					      </td>
 					    </tr>
 					  	</c:forEach>
 				  	</c:when>
 				  	<c:otherwise>
 				  		<tr>
-				  			<td colspan="8">내용이 없습니다.</td>
+				  			<td colspan="9">내용이 없습니다.</td>
 				  		</tr>
 				  	</c:otherwise>
 				  	</c:choose>
 				  	
 				  </tbody>
 				</table>
-				
-				<ul class="nav justify-content-end">
-				  <li><button type="button" class="btn btn-primary" id="addBtn">등록</button></li>
-				</ul>
                 
                 <!-- 페이지 네비게이션 시작 -->
 		        <nav aria-label="Page navigation example">
@@ -136,10 +141,6 @@
 				
 				<script type="text/javascript">
 					$(document).ready(function() {
-						$('#addBtn').on('click', function() {
-							window.location.href = '<c:out value="/let/eventprogram/master/createView.do"/>';
-						});
-						
 						$('#searchBtn').on('click', function() {
 							linkPage('1');
 						});
@@ -147,12 +148,16 @@
 					
 					function linkPage(page) {
 						$('#searchForm input[name="pageIndex"]').val(page);
-						$('#searchForm').attr('action', '<c:url value="/let/eventprogram/master/listView.do"/>');
+						$('#searchForm').attr('action', '<c:url value="/let/eventprogram/request/listView.do"/>');
 						$('#searchForm').submit();
 					}
 					function updateView(id) {
-						var url = '${pageContext.request.contextPath}/let/eventprogram/master/updateView.do?id=' + id;
-						window.location.href = url;
+						var url = '${pageContext.request.contextPath}/let/eventprogram/request/updateView.do';
+						
+						$("#searchForm").append('<input type="hidden" name="id" value="' + id + '"/>');
+						$("#searchForm").attr("method", "get");
+						$("#searchForm").attr("action", url);
+						$("#searchForm").submit();
 					}
 				</script>
 				

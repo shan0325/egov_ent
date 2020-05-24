@@ -4,4 +4,5 @@
 
 <sqlMapConfig>
 	<sqlMap resource="egovframework/sqlmap/front/eventprogram/EgovEventProgram_SQL_Mysql.xml"/>
+	<sqlMap resource="egovframework/sqlmap/front/eventprogram/EgovEventProgramRequest_SQL_Mysql.xml"/>
 </sqlMapConfig>

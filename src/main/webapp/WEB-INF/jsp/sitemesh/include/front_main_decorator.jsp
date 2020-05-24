@@ -43,7 +43,7 @@
 	          <a class="nav-link" href="<c:url value="/"/>">Home</a>
 	        </li>
 	        <li class="nav-item">
-	          <a class="nav-link" href="<c:url value="/front/eventprogram/list.do?pageUnit=6"/>">Event</a>
+	          <a class="nav-link" href="<c:url value="/front/eventprogram/list.do"/>">Event</a>
 	        </li>
 	        <li class="nav-item">
 	          <a class="nav-link" href="<c:url value="/"/>">게시판</a>
