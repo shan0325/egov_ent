@@ -39,14 +39,11 @@
 							<c:when test="${detail.status eq '0'}">
 								<span class="badge badge-pill badge-warning">진행전</span>
 							</c:when>
-							<c:when test="${detail.status eq '2'}">
+							<c:when test="${detail.status eq '2' or detail.status eq '3'}">
 								<span class="badge badge-pill badge-secondary">마감</span>
 							</c:when>
-							<c:when test="${detail.status eq '3'}">
-								<span class="badge badge-pill badge-secondary">마감(선착순)</span>
-							</c:when>		
 							<c:otherwise>
-								<span class="badge badge-pill badge-success">접수중</span>
+								<span class="badge badge-pill badge-success">접수중 <c:if test="${detail.firstComeYn eq 'Y'}">(선착순)</c:if></span>
 							</c:otherwise>
 						</c:choose>
 						<h6 class="card-title font-weight-bold mt-3"><c:out value="${detail.title }"/></h6>

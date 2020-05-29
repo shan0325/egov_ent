@@ -27,6 +27,7 @@
  			default-target-url="/front/main.do"
  			username-parameter="id"
  			password-parameter="password"
+ 			authentication-success-handler-ref="loginSuccessHandler"
  		/>
  		
  		<security:logout logout-url="/front/login/actionLogout.do" logout-success-url="/front/main.do" invalidate-session="true" delete-cookies="JSESSIONID" />
@@ -218,5 +219,9 @@
        		ORDER BY a.ROLE_SORT"/>
 	</bean>
 	<!-- DB에서 권한을 조회하여 제어하는 설정 끝 -->
+	
+	<bean id="loginSuccessHandler" class="egovframework.com.cmm.security.LoginSuccessHandler">
+		<constructor-arg value="/"/>
+	</bean>
 	
 </beans>

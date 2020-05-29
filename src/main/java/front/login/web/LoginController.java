@@ -57,7 +57,7 @@ public class LoginController {
 	 * 로그인 화면으로 들어간다
 	 */
 	@RequestMapping(value = "/front/login/loginView.do")
-	public String loginUsrView() throws Exception {
+	public String loginUsrView(HttpServletRequest request) throws Exception {
 		
 		// 세션이 있는 상태이면 메인으로 보내고 아니면 로그인으로 ..
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -72,6 +72,11 @@ public class LoginController {
 			logger.info("메인화면으로 이동");
 			return "redirect:/front/main.do";
 		}
+		
+		// 이전페이지 URL 추출
+		String referrer = request.getHeader("Referer");
+		request.getSession().setAttribute("prevPage", referrer);
+		logger.info("request referrer : " + referrer);
 		
 		return "front/login/loginView";
 	}
@@ -164,6 +169,7 @@ public class LoginController {
 		
 		return "redirect:/front/main.do";
 	}
+	
 }
 
 class RequestWrapperForSecurity extends HttpServletRequestWrapper {

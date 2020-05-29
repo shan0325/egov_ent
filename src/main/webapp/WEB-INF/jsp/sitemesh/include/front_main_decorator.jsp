@@ -32,7 +32,7 @@
 	<!-- Navigation -->
 	<nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
 	  <div class="container">
-	    <a class="navbar-brand" href="<c:url value="/"/>">Start Bootstrap</a>
+	    <a class="navbar-brand" href="<c:url value="/front/main.do"/>">Start Bootstrap</a>
 	    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
 	      Menu
 	      <i class="fas fa-bars"></i>
@@ -40,13 +40,13 @@
 	    <div class="collapse navbar-collapse" id="navbarResponsive">
 	      <ul class="navbar-nav ml-auto">
 	        <li class="nav-item">
-	          <a class="nav-link" href="<c:url value="/"/>">Home</a>
+	          <a class="nav-link" href="<c:url value="/front/main.do"/>">Home</a>
 	        </li>
 	        <li class="nav-item">
 	          <a class="nav-link" href="<c:url value="/front/eventprogram/list.do"/>">Event</a>
 	        </li>
 	        <li class="nav-item">
-	          <a class="nav-link" href="<c:url value="/"/>">게시판</a>
+	          <a class="nav-link" href="<c:url value="/front/main.do"/>">게시판</a>
 	        </li>
 	        <c:choose>
 	        <c:when test="${user ne 'anonymousUser'}">

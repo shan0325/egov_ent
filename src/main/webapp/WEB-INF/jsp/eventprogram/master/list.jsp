@@ -80,7 +80,7 @@
 				      <th scope="col">프로그램기간</th>
 				      <th scope="col">접수기간</th>
 				      <th scope="col">등록일시</th>
-				      <th scope="col">사용여부</th>
+				      <th scope="col">마감</th>
 				      <th scope="col">참여자수</th>
 				      <th scope="col">신청자보기</th>
 				    </tr>
@@ -96,7 +96,19 @@
 					      <td><c:out value="${obj.startDate}"/> ~ <c:out value="${obj.endDate}"/></td>
 					      <td><c:out value="${obj.reqStartDate}"/> ~ <c:out value="${obj.reqEndDate}"/></td>
 					      <td><c:out value="${obj.regDate}"/></td>
-					      <td><c:out value="${obj.useYn}"/></td>
+					      <td>
+					      	<c:choose>
+								<c:when test="${obj.status eq '0'}">
+									<span class="badge badge-pill badge-warning">진행전</span>
+								</c:when>
+								<c:when test="${obj.status eq '2' or obj.status eq '3'}">
+									<span class="badge badge-pill badge-secondary">마감</span>
+								</c:when>
+								<c:otherwise>
+									<span class="badge badge-pill badge-success">접수중</span>
+								</c:otherwise>
+							</c:choose>
+					      </td>
 					      <td>
 					      	<c:if test="${obj.firstComeYn eq 'Y'}">
 					      		선착순
